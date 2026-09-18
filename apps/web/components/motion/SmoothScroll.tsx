@@ -21,6 +21,24 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       autoRaf: false,
       smoothWheel: true,
       lerp: 0.08,
+
+      /*
+       * Elements marked with data-native-scroll
+       * keep normal browser wheel/touch scrolling.
+       *
+       * This is required for:
+       * - modal dialogs
+       * - case studies
+       * - command palettes
+       * - future terminal/code panels
+       * - any independently scrollable UI
+       */
+      prevent: (node) => {
+        return (
+          node instanceof HTMLElement &&
+          Boolean(node.closest("[data-native-scroll]"))
+        );
+      },
     });
 
     let animationFrame = 0;
@@ -35,6 +53,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
     return () => {
       cancelAnimationFrame(animationFrame);
+
       lenis.destroy();
     };
   }, []);

@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 
+interface PortfolioNavProps {
+  profiles: string[];
+  activeRole: string;
+}
+
 const navigation = [
   { label: "HOME", href: "#home" },
   { label: "ABOUT", href: "#about" },
@@ -11,11 +16,22 @@ const navigation = [
   { label: "CONTACT", href: "#contact" },
 ];
 
-export default function PortfolioNav() {
+function formatRole(role: string): string {
+  return role.replace(/[-_]+/g, " ").toUpperCase();
+}
+
+export default function PortfolioNav({
+  profiles,
+  activeRole,
+}: PortfolioNavProps) {
   const [open, setOpen] = useState(false);
 
   const closeMenu = () => {
     setOpen(false);
+  };
+
+  const switchRole = (role: string) => {
+    window.location.href = `/${encodeURIComponent(role)}#home`;
   };
 
   return (
@@ -29,7 +45,8 @@ export default function PortfolioNav() {
             aria-label="Rachit Doshi - Home"
           >
             <div className="portfolio-display text-xl font-black tracking-tight md:text-2xl">
-              RD<span className="text-[var(--color-red)]">.</span>
+              RD
+              <span className="text-[var(--color-red)]">.</span>
             </div>
 
             <div className="portfolio-mono mt-0.5 text-[8px] text-[var(--color-dim)]">
@@ -37,27 +54,61 @@ export default function PortfolioNav() {
             </div>
           </a>
 
-          <nav
-            aria-label="Primary navigation"
-            className="hidden items-center gap-8 md:flex"
-          >
-            {navigation.map((item, index) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="group portfolio-mono relative text-[10px] text-[var(--color-muted)] transition-colors duration-300 hover:text-[var(--color-white)]"
-              >
-                <span className="mr-1 text-[8px] text-[var(--color-dim)]">
-                  {String(index + 1).padStart(2, "0")}
+          {/* Desktop navigation */}
+          <div className="hidden items-center gap-8 md:flex">
+            <nav
+              aria-label="Primary navigation"
+              className="flex items-center gap-8"
+            >
+              {navigation.map((item, index) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="group portfolio-mono relative text-[10px] text-[var(--color-muted)] transition-colors duration-300 hover:text-[var(--color-white)]"
+                >
+                  <span className="mr-1 text-[8px] text-[var(--color-dim)]">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  {item.label}
+
+                  <span className="absolute -bottom-2 left-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+            </nav>
+
+            {/* Role switcher */}
+            {profiles.length > 0 && (
+              <div className="relative border-l border-white/10 pl-6">
+                <label
+                  htmlFor="portfolio-role"
+                  className="portfolio-mono mr-2 text-[8px] tracking-[0.16em] text-[var(--color-dim)]"
+                >
+                  ROLE
+                </label>
+
+                <select
+                  id="portfolio-role"
+                  value={activeRole}
+                  onChange={(event) => switchRole(event.target.value)}
+                  className="portfolio-mono cursor-pointer appearance-none border border-[var(--color-cyan)]/20 bg-[var(--color-panel)] px-3 py-2 pr-7 text-[9px] tracking-[0.12em] text-[var(--color-cyan)] outline-none transition-colors hover:border-[var(--color-cyan)]/50"
+                  aria-label="Select portfolio role"
+                >
+                  {profiles.map((profile) => (
+                    <option key={profile} value={profile}>
+                      {formatRole(profile)}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="pointer-events-none absolute right-2 bottom-[9px] text-[8px] text-[var(--color-cyan)]">
+                  ▼
                 </span>
+              </div>
+            )}
+          </div>
 
-                {item.label}
-
-                <span className="absolute -bottom-2 left-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </nav>
-
+          {/* Mobile menu */}
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
@@ -70,6 +121,7 @@ export default function PortfolioNav() {
         </div>
       </header>
 
+      {/* Mobile navigation */}
       <div
         className={`fixed inset-0 z-40 bg-[var(--color-void)]/98 backdrop-blur-xl transition-opacity duration-300 md:hidden ${
           open
@@ -107,6 +159,32 @@ export default function PortfolioNav() {
               </a>
             ))}
           </div>
+
+          {/* Mobile role switcher */}
+          {profiles.length > 0 && (
+            <div className="mt-8 border-t border-white/10 pt-6">
+              <label
+                htmlFor="portfolio-role-mobile"
+                className="portfolio-mono mb-3 block text-[9px] tracking-[0.18em] text-[var(--color-dim)]"
+              >
+                ACTIVE ROLE
+              </label>
+
+              <select
+                id="portfolio-role-mobile"
+                value={activeRole}
+                onChange={(event) => switchRole(event.target.value)}
+                className="portfolio-mono w-full appearance-none border border-[var(--color-cyan)]/30 bg-[var(--color-panel)] px-4 py-4 text-sm tracking-[0.12em] text-[var(--color-cyan)] outline-none"
+                aria-label="Select portfolio role"
+              >
+                {profiles.map((profile) => (
+                  <option key={profile} value={profile}>
+                    {formatRole(profile)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </nav>
       </div>
     </>

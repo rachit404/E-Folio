@@ -8,17 +8,21 @@ import type { PortfolioTheme } from "@/lib/theme";
 interface PortfolioShellProps {
   theme: PortfolioTheme;
   children: ReactNode;
+  profiles: string[];
+  activeRole: string;
 }
 
 export default function PortfolioShell({
   theme,
   children,
+  profiles,
+  activeRole,
 }: PortfolioShellProps) {
   return (
     <ThemeRoot theme={theme}>
       <SmoothScroll>
         <div className="relative min-h-screen bg-[var(--color-void)]">
-          <PortfolioNav />
+          <PortfolioNav profiles={profiles} activeRole={activeRole} />
 
           <div className="pointer-events-none fixed inset-0 z-30">
             <div className="absolute inset-0 border border-white/[0.04]" />
