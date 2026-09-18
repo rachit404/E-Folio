@@ -1,27 +1,59 @@
 import { loadPortfolio } from "@/content/loader/portfolio";
+import { loadTheme } from "@/lib/theme";
+
+import PortfolioShell from "@/components/layout/PortfolioShell";
+import Hero from "@/components/hero/Hero";
+import PlaceholderScene from "@/components/scenes/PlaceholderScene";
+import AboutScene from "@/components/about/AboutScene";
 
 export default async function Home() {
   const portfolio = await loadPortfolio("main");
+  const theme = await loadTheme();
 
   return (
-    <main>
-      <h1>{portfolio.metadata.name}</h1>
+    <PortfolioShell theme={theme}>
+      <Hero portfolio={portfolio} theme={theme} />
+      <AboutScene portfolio={portfolio} />
 
-      <p>{portfolio.metadata.course}</p>
+      <PlaceholderScene
+        id="about"
+        number="01"
+        label="IDENTITY"
+        title="WHO IS RACHIT?"
+        description="The engineer behind the systems, experiments, ideas and things being built."
+      />
 
-      <p>Sections loaded: {portfolio.sections.length}</p>
+      <PlaceholderScene
+        id="experience"
+        number="02"
+        label="JOURNEY"
+        title="THE JOURNEY"
+        description="Experience, internships, education and milestones will become an interactive timeline."
+      />
 
-      <div>
-        {portfolio.sections.map((section, index) => (
-          <section key={`${section.heading}-${index}`}>
-            <h2>{section.heading}</h2>
+      <PlaceholderScene
+        id="skills"
+        number="03"
+        label="ENGINEERING ARSENAL"
+        title="SKILL MATRIX"
+        description="A dynamic representation of the technologies, disciplines and tools used to build."
+      />
 
-            <p>Type: {section.kind}</p>
+      <PlaceholderScene
+        id="projects"
+        number="04"
+        label="PROJECT VAULT"
+        title="THINGS I'VE BUILT"
+        description="Projects will become interactive technological artifacts inside the portfolio universe."
+      />
 
-            <p>Items: {section.items.length}</p>
-          </section>
-        ))}
-      </div>
-    </main>
+      <PlaceholderScene
+        id="contact"
+        number="05"
+        label="TRANSMISSION"
+        title="LET'S BUILD."
+        description="The final destination for opportunities, interesting problems and new missions."
+      />
+    </PortfolioShell>
   );
 }

@@ -1,0 +1,29 @@
+{
+  "identity": {
+    "name": "Rachit Doshi",
+    "shortName": "RD",
+    "universe": "E-FOLIO"
+  },
+  "colors": {
+    "void": "#050608",
+    "graphite": "#0b0e12",
+    "panel": "#10151b",
+    "cyan": "#00e5ff",
+    "red": "#ff2147",
+    "white": "#f4f1ea",
+    "muted": "#8b949e",
+    "dim": "#4d5660"
+  },
+  "hero": {
+    "backgroundImage": "",
+    "foregroundImage": "",
+    "model": "",
+    "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
+    "status": "SYSTEM ONLINE",
+    "cta": "ENTER PORTFOLIO",
+    "scrollLabel": "SCROLL TO EXPLORE"
+  },
+  "navigation": {
+    "showNumbers": true
+  }
+}

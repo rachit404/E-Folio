@@ -1,26 +1,122 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-void: #050608;
+  --color-graphite: #0b0e12;
+  --color-panel: #10151b;
+
+  --color-cyan: #00e5ff;
+  --color-red: #ff2147;
+
+  --color-white: #f4f1ea;
+  --color-muted: #8b949e;
+  --color-dim: #4d5660;
+
+  --border-subtle: rgba(0, 229, 255, 0.16);
+  --border-active: rgba(0, 229, 255, 0.55);
+
+  --font-display: "Arial Narrow", Arial, sans-serif;
+  --font-body: Arial, sans-serif;
+  --font-mono: "Courier New", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-void);
+  color: var(--color-white);
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(0, 229, 255, 0.035),
+      transparent 35%
+    ),
+    var(--color-void);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+button,
+a,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--color-cyan);
+  color: var(--color-void);
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dim);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan);
+}
+
+/* Utility classes */
+
+.portfolio-panel {
+  background: rgba(16, 21, 27, 0.72);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(14px);
+}
+
+.portfolio-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.portfolio-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
