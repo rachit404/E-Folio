@@ -5,6 +5,8 @@ import PortfolioShell from "@/components/layout/PortfolioShell";
 import Hero from "@/components/hero/Hero";
 import PlaceholderScene from "@/components/scenes/PlaceholderScene";
 import AboutScene from "@/components/about/AboutScene";
+import ExperienceScene from "@/components/experience/ExperienceScene";
+import SkillsScene from "@/components/skills/SkillsScene";
 
 export default async function Home() {
   const portfolio = await loadPortfolio("main");
@@ -13,31 +15,12 @@ export default async function Home() {
   return (
     <PortfolioShell theme={theme}>
       <Hero portfolio={portfolio} theme={theme} />
+
       <AboutScene portfolio={portfolio} />
 
-      <PlaceholderScene
-        id="about"
-        number="01"
-        label="IDENTITY"
-        title="WHO IS RACHIT?"
-        description="The engineer behind the systems, experiments, ideas and things being built."
-      />
+      <ExperienceScene portfolio={portfolio} />
 
-      <PlaceholderScene
-        id="experience"
-        number="02"
-        label="JOURNEY"
-        title="THE JOURNEY"
-        description="Experience, internships, education and milestones will become an interactive timeline."
-      />
-
-      <PlaceholderScene
-        id="skills"
-        number="03"
-        label="ENGINEERING ARSENAL"
-        title="SKILL MATRIX"
-        description="A dynamic representation of the technologies, disciplines and tools used to build."
-      />
+      <SkillsScene portfolio={portfolio} />
 
       <PlaceholderScene
         id="projects"
