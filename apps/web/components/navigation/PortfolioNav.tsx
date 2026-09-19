@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 interface PortfolioNavProps {
   profiles: string[];
@@ -8,12 +8,12 @@ interface PortfolioNavProps {
 }
 
 const navigation = [
-  { label: "HOME", href: "#home" },
-  { label: "ABOUT", href: "#about" },
-  { label: "EXPERIENCE", href: "#experience" },
-  { label: "SKILLS", href: "#skills" },
-  { label: "PROJECTS", href: "#projects" },
-  { label: "CONTACT", href: "#contact" },
+  { label: "HOME", href: "#home", id: "home" },
+  { label: "ABOUT", href: "#about", id: "about" },
+  { label: "EXPERIENCE", href: "#experience", id: "experience" },
+  { label: "SKILLS", href: "#skills", id: "skills" },
+  { label: "PROJECTS", href: "#projects", id: "projects" },
+  { label: "CONTACT", href: "#contact", id: "contact" },
 ];
 
 function formatRole(role: string): string {
@@ -25,6 +25,8 @@ export default function PortfolioNav({
   activeRole,
 }: PortfolioNavProps) {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const closeMenu = () => {
     setOpen(false);
@@ -34,13 +36,148 @@ export default function PortfolioNav({
     window.location.href = `/${encodeURIComponent(role)}#home`;
   };
 
+  useEffect(() => {
+    const sections = navigation
+      .map((item) => document.getElementById(item.id))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible[0]) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -55% 0px",
+        threshold: [0.05, 0.15, 0.3, 0.5],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const updateProgress = () => {
+      frame = 0;
+
+      const scrollTop = window.scrollY;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      const progress =
+        scrollable > 0 ? Math.min(1, Math.max(0, scrollTop / scrollable)) : 0;
+
+      setScrollProgress(progress);
+    };
+
+    const handleScroll = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    updateProgress();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", updateProgress);
+
+    return () => {
+      if (frame) {
+        cancelAnimationFrame(frame);
+      }
+
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [open]);
+
+  const navigateToSection = (
+    event: MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) => {
+    event.preventDefault();
+
+    closeMenu();
+
+    const target = document.getElementById(id);
+
+    if (!target) return;
+
+    const headerOffset = 12;
+
+    const targetPosition =
+      target.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+    window.history.replaceState(null, "", `#${id}`);
+
+    window.scrollTo({
+      top: Math.max(0, targetPosition),
+      behavior: "smooth",
+    });
+  };
+
   return (
     <>
+      {/* Scroll progress */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-px bg-white/[0.04]">
+        <div
+          className="h-full origin-left bg-gradient-to-r from-[var(--color-cyan)] via-[var(--color-cyan)] to-[var(--color-red)] shadow-[0_0_10px_rgba(0,229,255,0.5)]"
+          style={{
+            transform: `scaleX(${scrollProgress})`,
+          }}
+        />
+      </div>
+
       <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-6 md:px-10">
           <a
             href="#home"
-            onClick={closeMenu}
+            onClick={(event) => navigateToSection(event, "home")}
             className="group relative"
             aria-label="Rachit Doshi - Home"
           >
@@ -60,21 +197,41 @@ export default function PortfolioNav({
               aria-label="Primary navigation"
               className="flex items-center gap-8"
             >
-              {navigation.map((item, index) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="group portfolio-mono relative text-[10px] text-[var(--color-muted)] transition-colors duration-300 hover:text-[var(--color-white)]"
-                >
-                  <span className="mr-1 text-[8px] text-[var(--color-dim)]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+              {navigation.map((item, index) => {
+                const isActive = activeSection === item.id;
 
-                  {item.label}
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={(event) => navigateToSection(event, item.id)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`group portfolio-mono relative text-[10px] transition-colors duration-300 ${
+                      isActive
+                        ? "text-[var(--color-white)]"
+                        : "text-[var(--color-muted)] hover:text-[var(--color-white)]"
+                    }`}
+                  >
+                    <span
+                      className={`mr-1 text-[8px] ${
+                        isActive
+                          ? "text-[var(--color-cyan)]"
+                          : "text-[var(--color-dim)]"
+                      }`}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
 
-                  <span className="absolute -bottom-2 left-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-300 group-hover:w-full" />
-                </a>
-              ))}
+                    {item.label}
+
+                    <span
+                      className={`absolute -bottom-2 left-0 h-px bg-[var(--color-cyan)] transition-all duration-300 ${
+                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    />
+                  </a>
+                );
+              })}
             </nav>
 
             {/* Role switcher */}
@@ -101,7 +258,7 @@ export default function PortfolioNav({
                   ))}
                 </select>
 
-                <span className="pointer-events-none absolute right-2 bottom-[9px] text-[8px] text-[var(--color-cyan)]">
+                <span className="pointer-events-none absolute bottom-[9px] right-2 text-[8px] text-[var(--color-cyan)]">
                   ▼
                 </span>
               </div>
@@ -112,9 +269,10 @@ export default function PortfolioNav({
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-[var(--color-white)] transition-colors hover:border-[var(--border-active)] md:hidden"
+            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-[var(--color-white)] transition-colors hover:border-[var(--color-cyan)]/50 md:hidden"
             aria-label={open ? "Close navigation" : "Open navigation"}
             aria-expanded={open}
+            aria-controls="mobile-navigation"
           >
             {open ? "×" : "≡"}
           </button>
@@ -123,6 +281,8 @@ export default function PortfolioNav({
 
       {/* Mobile navigation */}
       <div
+        id="mobile-navigation"
+        aria-hidden={!open}
         className={`fixed inset-0 z-40 bg-[var(--color-void)]/98 backdrop-blur-xl transition-opacity duration-300 md:hidden ${
           open
             ? "pointer-events-auto opacity-100"
@@ -131,33 +291,58 @@ export default function PortfolioNav({
       >
         <nav
           aria-label="Mobile navigation"
-          className="flex h-full flex-col justify-center px-8"
+          className="flex h-full flex-col justify-center overflow-y-auto px-8 pb-10 pt-24"
         >
           <p className="portfolio-mono mb-8 text-[10px] text-[var(--color-cyan)]">
             NAVIGATION // SYSTEM
           </p>
 
           <div className="flex flex-col">
-            {navigation.map((item, index) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={closeMenu}
-                className="group flex items-center border-b border-white/10 py-5"
-              >
-                <span className="portfolio-mono mr-6 text-xs text-[var(--color-dim)]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+            {navigation.map((item, index) => {
+              const isActive = activeSection === item.id;
 
-                <span className="portfolio-display text-3xl font-bold text-[var(--color-white)]">
-                  {item.label}
-                </span>
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(event) => navigateToSection(event, item.id)}
+                  tabIndex={open ? 0 : -1}
+                  className={`group flex items-center border-b border-white/10 py-5 ${
+                    isActive ? "text-[var(--color-cyan)]" : ""
+                  }`}
+                >
+                  <span
+                    className={`portfolio-mono mr-6 text-xs ${
+                      isActive
+                        ? "text-[var(--color-cyan)]"
+                        : "text-[var(--color-dim)]"
+                    }`}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-                <span className="ml-auto text-[var(--color-cyan)] opacity-0 transition-opacity group-hover:opacity-100">
-                  →
-                </span>
-              </a>
-            ))}
+                  <span
+                    className={`portfolio-display text-3xl font-bold ${
+                      isActive
+                        ? "text-[var(--color-cyan)]"
+                        : "text-[var(--color-white)]"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+
+                  <span
+                    className={`ml-auto transition-opacity ${
+                      isActive
+                        ? "text-[var(--color-cyan)] opacity-100"
+                        : "text-[var(--color-cyan)] opacity-0 group-hover:opacity-100"
+                    }`}
+                  >
+                    →
+                  </span>
+                </a>
+              );
+            })}
           </div>
 
           {/* Mobile role switcher */}
@@ -185,6 +370,11 @@ export default function PortfolioNav({
               </select>
             </div>
           )}
+
+          <div className="portfolio-mono mt-10 flex justify-between text-[7px] tracking-[0.16em] text-[var(--color-dim)]">
+            <span>E-FOLIO / NAV</span>
+            <span>ESC / CLOSE</span>
+          </div>
         </nav>
       </div>
     </>
