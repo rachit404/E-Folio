@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+
 import type { PortfolioData } from "@/content/schema/portfolio";
 import SceneFrame from "@/components/layout/SceneFrame";
 
@@ -8,9 +11,145 @@ interface ExperienceSceneProps {
 }
 
 export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+
   const timelineSections = portfolio.sections.filter(
     (section) => section.kind === "timeline" || section.kind === "positions",
   );
+
+  const timelineEntries = timelineSections.filter(
+    (section) => section.kind === "timeline",
+  );
+
+  const positionEntries = timelineSections.filter(
+    (section) => section.kind === "positions",
+  );
+
+  useEffect(() => {
+    const root = sceneRef.current;
+
+    if (!root) {
+      return;
+    }
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reducedMotion) {
+      return;
+    }
+
+    const context = gsap.context(() => {
+      const trigger = {
+        trigger: root,
+        start: "top 72%",
+        once: true,
+      };
+
+      gsap.fromTo(
+        "[data-experience-header]",
+        {
+          opacity: 0,
+          x: -35,
+        },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.75,
+          ease: "power3.out",
+          scrollTrigger: trigger,
+        },
+      );
+
+      gsap.fromTo(
+        "[data-experience-rail]",
+        {
+          scaleY: 0,
+          transformOrigin: "top",
+        },
+        {
+          scaleY: 1,
+          duration: 1.4,
+          delay: 0.2,
+          ease: "power3.inOut",
+          scrollTrigger: trigger,
+        },
+      );
+
+      gsap.fromTo(
+        "[data-experience-entry]",
+        {
+          opacity: 0,
+          x: 55,
+        },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.75,
+          stagger: 0.18,
+          delay: 0.35,
+          ease: "power3.out",
+          scrollTrigger: trigger,
+        },
+      );
+
+      gsap.fromTo(
+        "[data-experience-node]",
+        {
+          opacity: 0,
+          scale: 0,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.45,
+          stagger: 0.18,
+          delay: 0.45,
+          ease: "back.out(1.7)",
+          scrollTrigger: trigger,
+        },
+      );
+
+      gsap.fromTo(
+        "[data-experience-detail]",
+        {
+          opacity: 0,
+          y: 15,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.05,
+          delay: 0.65,
+          ease: "power2.out",
+          scrollTrigger: trigger,
+        },
+      );
+
+      gsap.fromTo(
+        "[data-position-entry]",
+        {
+          opacity: 0,
+          y: 30,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          stagger: 0.12,
+          delay: 0.75,
+          ease: "power3.out",
+          scrollTrigger: trigger,
+        },
+      );
+    }, root);
+
+    return () => {
+      context.revert();
+    };
+  }, []);
 
   return (
     <SceneFrame
@@ -19,182 +158,229 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
       label="JOURNEY / EXPERIENCE"
       className="min-h-screen"
     >
-      <section className="relative min-h-screen overflow-hidden">
-        {/* Atmospheric lines */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[15%] top-[18%] h-[70%] w-px bg-gradient-to-b from-transparent via-[var(--color-cyan)]/20 to-transparent" />
+      <div ref={sceneRef}>
+        <section className="relative overflow-hidden py-24 md:py-32">
+          <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+            {/* Header */}
+            <div
+              data-experience-header
+              className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end"
+            >
+              <div>
+                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
+                  CAREER LOG // 02
+                </p>
 
-          <div className="absolute left-[15%] top-[32%] h-px w-[70%] bg-[var(--color-cyan)]/10" />
+                <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.82] tracking-[-0.06em]">
+                  FIELD
+                  <br />
+                  <span className="text-[var(--color-red)]">RECORDS</span>
+                </h2>
+              </div>
 
-          <div className="absolute left-[15%] top-[62%] h-px w-[55%] bg-[var(--color-red)]/10" />
-        </div>
-
-        <div className="relative z-10 grid gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          {/* Heading */}
-          <div>
-            <p className="portfolio-mono mb-7 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
-              02 / CHRONOLOGY
-            </p>
-
-            <h2 className="portfolio-display text-[clamp(4rem,8vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.06em]">
-              THE
-              <br />
-              <span className="text-[var(--color-red)]">JOURNEY</span>
-            </h2>
-
-            <p className="mt-10 max-w-md border-l border-[var(--color-cyan)]/30 pl-6 text-sm leading-7 text-[var(--color-muted)] md:text-base">
-              A record of the environments, problems, systems and experiences
-              that shaped the engineer behind E-FOLIO.
-            </p>
-
-            <div className="portfolio-mono mt-10 text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-              CURRENT POSITION
-            </div>
-
-            <div className="mt-2 flex items-center gap-3">
-              <span className="h-2 w-2 bg-[var(--color-cyan)] shadow-[0_0_12px_var(--color-cyan)]" />
-              <span className="portfolio-mono text-[10px] text-[var(--color-white)]">
-                SYSTEM ACTIVE
-              </span>
-            </div>
-          </div>
-
-          {/* Timeline */}
-          <div className="relative">
-            {timelineSections.length === 0 ? (
-              <div className="border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/40 p-8">
-                <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
-                  NO TIMELINE RECORDS DETECTED
+              <div className="max-w-sm">
+                <p className="text-sm leading-6 text-[var(--color-muted)] md:text-base">
+                  A chronological record of engineering work, internships, roles
+                  and technical environments.
                 </p>
               </div>
-            ) : (
+            </div>
+
+            {/* Timeline */}
+            {timelineEntries.length > 0 && (
               <div className="relative">
-                {/* Timeline rail */}
-                <div className="absolute bottom-0 left-[18px] top-0 w-px bg-gradient-to-b from-[var(--color-cyan)]/60 via-[var(--color-cyan)]/20 to-transparent" />
+                {/* Rail */}
+                <div
+                  data-experience-rail
+                  className="absolute bottom-0 left-[11px] top-0 w-px bg-gradient-to-b from-[var(--color-cyan)] via-[var(--color-cyan)]/30 to-transparent md:left-[15px]"
+                />
 
-                <div className="space-y-8">
-                  {timelineSections.flatMap((section) =>
-                    section.items.map((item, index) => {
+                <div className="space-y-10 md:space-y-14">
+                  {timelineEntries.flatMap((section) =>
+                    section.items.map((item, itemIndex) => {
                       if (
-                        section.kind === "timeline" &&
-                        "organization" in item &&
-                        "role" in item &&
-                        "dates" in item
+                        !(
+                          "organization" in item &&
+                          "role" in item &&
+                          "dates" in item &&
+                          "details" in item
+                        )
                       ) {
-                        return (
-                          <article
-                            key={`${section.heading}-${index}`}
-                            className="group relative pl-12"
+                        return null;
+                      }
+
+                      return (
+                        <article
+                          key={`${section.heading}-${itemIndex}`}
+                          data-experience-entry
+                          className="relative pl-10 md:pl-16"
+                        >
+                          {/* Node */}
+                          <div
+                            data-experience-node
+                            className="absolute left-[5px] top-2 flex h-3 w-3 items-center justify-center rounded-full border border-[var(--color-cyan)] bg-[var(--color-void)] md:left-[9px]"
                           >
-                            {/* Checkpoint */}
-                            <div className="absolute left-[12px] top-6 h-3 w-3 border border-[var(--color-cyan)] bg-[var(--color-void)] transition-all duration-300 group-hover:bg-[var(--color-cyan)] group-hover:shadow-[0_0_18px_var(--color-cyan)]" />
+                            <span className="h-1 w-1 rounded-full bg-[var(--color-cyan)]" />
+                          </div>
 
-                            <div className="border border-[var(--color-white)]/10 bg-[var(--color-panel)]/40 p-6 backdrop-blur-sm transition-all duration-300 group-hover:border-[var(--color-cyan)]/30 group-hover:bg-[var(--color-panel)]/70">
-                              <div className="flex flex-wrap items-start justify-between gap-4">
-                                <div>
-                                  <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)]">
-                                    {section.heading}
-                                  </p>
+                          {/* Entry */}
+                          <div className="group relative overflow-hidden border border-white/10 bg-[var(--color-panel)]/30 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-cyan)]/30 hover:bg-[var(--color-panel)]/50 md:p-8">
+                            <div className="pointer-events-none absolute right-0 top-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-500 group-hover:w-full" />
 
-                                  <h3 className="mt-2 text-xl font-medium text-[var(--color-white)] md:text-2xl">
-                                    {item.role}
-                                  </h3>
+                            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                              <div>
+                                <p
+                                  data-experience-detail
+                                  className="portfolio-mono mb-2 text-[8px] tracking-[0.16em] text-[var(--color-cyan)]"
+                                >
+                                  {section.heading}
+                                </p>
 
-                                  <p className="mt-1 text-sm text-[var(--color-muted)]">
-                                    {item.organization}
-                                  </p>
-                                </div>
+                                <h3
+                                  data-experience-detail
+                                  className="portfolio-display text-2xl font-bold tracking-tight text-[var(--color-white)] md:text-3xl"
+                                >
+                                  {item.organization}
+                                </h3>
 
-                                <span className="portfolio-mono border border-[var(--color-red)]/25 px-3 py-2 text-[8px] text-[var(--color-red)]">
-                                  {item.dates}
-                                </span>
+                                <p
+                                  data-experience-detail
+                                  className="mt-2 text-sm text-[var(--color-red)]"
+                                >
+                                  {item.role}
+                                </p>
                               </div>
 
-                              <p className="portfolio-mono mt-5 text-[8px] text-[var(--color-dim)]">
+                              <span
+                                data-experience-detail
+                                className="portfolio-mono shrink-0 border border-white/10 px-3 py-2 text-[8px] tracking-[0.12em] text-[var(--color-muted)]"
+                              >
+                                {item.dates}
+                              </span>
+                            </div>
+
+                            {item.secondary && (
+                              <p
+                                data-experience-detail
+                                className="mt-5 text-xs text-[var(--color-dim)]"
+                              >
                                 {item.secondary}
                               </p>
+                            )}
 
-                              {item.details.length > 0 && (
-                                <ul className="mt-5 space-y-2">
-                                  {item.details
-                                    .slice(0, 3)
-                                    .map((detail, detailIndex) => (
-                                      <li
-                                        key={detailIndex}
-                                        className="flex gap-3 text-xs leading-6 text-[var(--color-muted)]"
-                                      >
-                                        <span className="mt-3 h-1 w-1 shrink-0 bg-[var(--color-red)]" />
-                                        <span>{detail}</span>
-                                      </li>
-                                    ))}
+                            {item.details.length > 0 && (
+                              <div className="mt-7 border-t border-white/10 pt-6">
+                                <ul className="space-y-3">
+                                  {item.details.map((detail, detailIndex) => (
+                                    <li
+                                      key={`${detail}-${detailIndex}`}
+                                      data-experience-detail
+                                      className="flex gap-4 text-sm leading-6 text-[var(--color-muted)]"
+                                    >
+                                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-cyan)]">
+                                        {String(detailIndex + 1).padStart(
+                                          2,
+                                          "0",
+                                        )}
+                                      </span>
+
+                                      <span>{detail}</span>
+                                    </li>
+                                  ))}
                                 </ul>
-                              )}
-                            </div>
-                          </article>
-                        );
-                      }
-
-                      if (
-                        section.kind === "positions" &&
-                        "organization" in item &&
-                        "title" in item &&
-                        "dates" in item
-                      ) {
-                        return (
-                          <article
-                            key={`${section.heading}-${index}`}
-                            className="group relative pl-12"
-                          >
-                            <div className="absolute left-[13px] top-6 h-2.5 w-2.5 bg-[var(--color-red)] transition-all duration-300 group-hover:shadow-[0_0_16px_var(--color-red)]" />
-
-                            <div className="border border-[var(--color-white)]/10 bg-[var(--color-panel)]/30 p-6 transition-all duration-300 group-hover:border-[var(--color-red)]/30">
-                              <div className="flex flex-wrap justify-between gap-4">
-                                <div>
-                                  <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                                    {section.heading}
-                                  </p>
-
-                                  <h3 className="mt-2 text-lg text-[var(--color-white)]">
-                                    {item.title}
-                                  </h3>
-
-                                  <p className="mt-1 text-sm text-[var(--color-muted)]">
-                                    {item.organization}
-                                  </p>
-                                </div>
-
-                                <span className="portfolio-mono text-[8px] text-[var(--color-red)]">
-                                  {item.dates}
-                                </span>
                               </div>
-                            </div>
-                          </article>
-                        );
-                      }
-
-                      return null;
+                            )}
+                          </div>
+                        </article>
+                      );
                     }),
                   )}
                 </div>
               </div>
             )}
+
+            {/* Positions */}
+            {positionEntries.length > 0 && (
+              <div className="mt-24">
+                <div className="mb-8 flex items-center gap-4">
+                  <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+                    ADDITIONAL RECORDS
+                  </span>
+
+                  <span className="h-px flex-1 bg-white/10" />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  {positionEntries.flatMap((section) =>
+                    section.items.map((item, itemIndex) => {
+                      if (
+                        !(
+                          "title" in item &&
+                          "organization" in item &&
+                          "dates" in item
+                        )
+                      ) {
+                        return null;
+                      }
+
+                      return (
+                        <article
+                          key={`${section.heading}-${itemIndex}`}
+                          data-position-entry
+                          className="group relative border border-white/10 bg-[var(--color-panel)]/20 p-6 transition-all duration-500 hover:border-[var(--color-red)]/30 hover:bg-[var(--color-panel)]/40"
+                        >
+                          <div className="mb-6 flex items-center justify-between">
+                            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
+                              POSITION
+                            </span>
+
+                            <span className="h-1.5 w-1.5 bg-[var(--color-red)] opacity-50 transition-opacity group-hover:opacity-100" />
+                          </div>
+
+                          <h3 className="portfolio-display text-xl font-bold text-[var(--color-white)] md:text-2xl">
+                            {item.title}
+                          </h3>
+
+                          <p className="mt-2 text-sm text-[var(--color-red)]">
+                            {item.organization}
+                          </p>
+
+                          <p className="portfolio-mono mt-5 text-[8px] tracking-[0.12em] text-[var(--color-muted)]">
+                            {item.dates}
+                          </p>
+                        </article>
+                      );
+                    }),
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Empty state */}
+            {timelineEntries.length === 0 && positionEntries.length === 0 && (
+              <div className="border border-dashed border-white/10 p-10 text-center">
+                <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
+                  NO EXPERIENCE RECORDS AVAILABLE
+                </p>
+              </div>
+            )}
+
+            {/* Footer */}
+            <div className="mt-20 flex items-center justify-between border-t border-white/10 pt-6">
+              <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
+                END OF RECORD
+              </span>
+
+              <a
+                href="#skills"
+                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)]"
+              >
+                SKILLS →
+              </a>
+            </div>
           </div>
-        </div>
-
-        {/* Bottom navigation */}
-        <div className="relative z-10 mt-20 flex items-center justify-between border-t border-[var(--color-white)]/10 pt-6">
-          <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-            01 → 02 → CURRENT
-          </span>
-
-          <a
-            href="#skills"
-            className="portfolio-mono text-[9px] tracking-[0.14em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)]"
-          >
-            SKILL MATRIX →
-          </a>
-        </div>
-      </section>
+        </section>
+      </div>
     </SceneFrame>
   );
 }
