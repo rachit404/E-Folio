@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import PortfolioNav from "@/components/navigation/PortfolioNav";
+import ResetHashOnReload from "@/components/navigation/ResetHashOnReload";
 import ThemeRoot from "@/components/layout/ThemeRoot";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import type { PortfolioTheme } from "@/lib/theme";
@@ -21,6 +22,8 @@ export default function PortfolioShell({
   return (
     <ThemeRoot theme={theme}>
       <SmoothScroll>
+        <ResetHashOnReload />
+
         <div className="relative min-h-screen bg-[var(--color-void)]">
           <PortfolioNav profiles={profiles} activeRole={activeRole} />
 
