@@ -1,5 +1,4 @@
 import { extractBraced } from "./commands";
-
 import { cleanLatex } from "./cleaner";
 
 export interface PortfolioMetadata {
@@ -10,21 +9,11 @@ export interface PortfolioMetadata {
   links: Record<string, string>;
 }
 
-/**
- * Extract the value of a LaTeX \newcommand.
- *
- * Supported format:
- *
- * \newcommand{\name}{Rachit Doshi}
- * \newcommand{\course}{Artificial Intelligence and Data Science}
- * \newcommand{\phone}{...}
- * \newcommand{\emaila}{...}
- *
- * We parse balanced braces instead of using a simple
- * [^}]* regex so nested LaTeX remains supported.
- */
 function extractNewCommand(text: string, command: string): string | undefined {
-  const pattern = new RegExp(String.raw`\\newcommand\s*\{\\${command}\}`, "g");
+  const pattern = new RegExp(
+    String.raw`\\newcommand\s*\{\\${escapeRegExp(command)}\}`,
+    "g",
+  );
 
   const match = pattern.exec(text);
 
@@ -32,10 +21,33 @@ function extractNewCommand(text: string, command: string): string | undefined {
     return undefined;
   }
 
-  let position = match.index + match[0].length;
+  let position = (match.index ?? 0) + match[0].length;
 
   while (position < text.length && /\s/.test(text[position])) {
     position++;
+  }
+
+  /*
+   * Support optional arguments:
+   *
+   * \newcommand{\foo}[1]{...}
+   */
+  if (text[position] === "[") {
+    let optionalEnd = position + 1;
+
+    while (optionalEnd < text.length && text[optionalEnd] !== "]") {
+      optionalEnd++;
+    }
+
+    if (optionalEnd >= text.length) {
+      return undefined;
+    }
+
+    position = optionalEnd + 1;
+
+    while (position < text.length && /\s/.test(text[position])) {
+      position++;
+    }
   }
 
   if (text[position] !== "{") {
@@ -45,66 +57,150 @@ function extractNewCommand(text: string, command: string): string | undefined {
   try {
     const [value] = extractBraced(text, position);
 
-    return cleanLatex(value);
+    const cleaned = cleanLatex(value);
+
+    return cleaned || undefined;
   } catch {
     return undefined;
   }
 }
 
+function addLink(
+  links: Record<string, string>,
+  key: string,
+  url: string,
+): void {
+  if (!url) {
+    return;
+  }
+
+  if (!links[key]) {
+    links[key] = url;
+    return;
+  }
+
+  let suffix = 2;
+
+  while (links[`${key}${suffix}`]) {
+    suffix++;
+  }
+
+  links[`${key}${suffix}`] = url;
+}
+
 /**
- * Extract all \href{URL}{label} occurrences.
+ * Extract metadata links.
  *
- * This is intentionally generic. We do not hard-code
- * GitHub/LinkedIn into the parser's structural logic.
+ * Generic links are read from the header.
+ *
+ * GitHub and LinkedIn are additionally searched across
+ * the COMPLETE document because resume templates can
+ * place social links in different locations.
  */
 function extractLinks(text: string): Record<string, string> {
   const links: Record<string, string> = {};
 
-  const pattern = /\\href\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g;
+  /*
+   * ----------------------------------------------------
+   * 1. Generic header links
+   * ----------------------------------------------------
+   *
+   * This keeps arbitrary links such as:
+   *
+   * portfolio
+   * website
+   * email
+   * etc.
+   *
+   * from project-level URLs.
+   */
+  const firstSection = text.search(/\\section\s*\*?\s*\{/);
 
-  let match: RegExpExecArray | null;
+  const header = firstSection === -1 ? text : text.slice(0, firstSection);
 
-  while ((match = pattern.exec(text)) !== null) {
-    const url = cleanLatex(match[1]);
+  const headerHrefPattern = /\\href\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g;
 
-    const label = cleanLatex(match[2]);
+  let headerMatch: RegExpExecArray | null;
+
+  while ((headerMatch = headerHrefPattern.exec(header)) !== null) {
+    const url = cleanLatex(headerMatch[1]);
+
+    const label = cleanLatex(headerMatch[2]);
 
     if (!url) {
       continue;
     }
 
     /*
-     * Determine a stable semantic key when possible.
+     * Known social platforms receive stable keys.
      */
+    if (/(?:^|\/)github\.com(?:\/|$)/i.test(url)) {
+      addLink(links, "github", url);
+      continue;
+    }
+
+    if (/(?:^|\/)linkedin\.com(?:\/|$)/i.test(url)) {
+      addLink(links, "linkedin", url);
+      continue;
+    }
+
     const normalizedLabel = label
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "")
       .trim();
 
-    let key = normalizedLabel;
+    const key = normalizedLabel || "link";
 
-    if (url.includes("github.com")) {
-      key = "github";
-    } else if (url.includes("linkedin.com")) {
-      key = "linkedin";
-    }
+    addLink(links, key, url);
+  }
+
+  /*
+   * ----------------------------------------------------
+   * 2. Explicit GitHub discovery
+   * ----------------------------------------------------
+   *
+   * Search the complete .tex file.
+   *
+   * This catches GitHub links even if the template
+   * places them outside the header.
+   */
+  const githubPattern =
+    /\\href\s*\{\s*(https?:\/\/(?:www\.)?github\.com\/[^{}\s]+)\s*\}/gi;
+
+  let githubMatch: RegExpExecArray | null;
+
+  while ((githubMatch = githubPattern.exec(text)) !== null) {
+    addLink(links, "github", cleanLatex(githubMatch[1]));
 
     /*
-     * Avoid overwriting an existing link if the
-     * document contains multiple links with the
-     * same label.
+     * We only need the first primary GitHub URL.
+     * Additional URLs can still be represented as
+     * github2, github3, etc.
      */
-    if (links[key]) {
-      let suffix = 2;
+  }
 
-      while (links[`${key}${suffix}`]) {
-        suffix++;
-      }
+  /*
+   * ----------------------------------------------------
+   * 3. Explicit LinkedIn discovery
+   * ----------------------------------------------------
+   *
+   * This is the important fix.
+   *
+   * We do NOT depend on:
+   *
+   * - the link label
+   * - \faLinkedin
+   * - the link location
+   *
+   * We identify LinkedIn by its URL.
+   */
+  const linkedinPattern =
+    /\\href\s*\{\s*(https?:\/\/(?:www\.)?linkedin\.com\/[^{}\s]+)\s*\}/gi;
 
-      key = `${key}${suffix}`;
-    }
+  let linkedinMatch: RegExpExecArray | null;
 
-    links[key] = url;
+  while ((linkedinMatch = linkedinPattern.exec(text)) !== null) {
+    addLink(links, "linkedin", cleanLatex(linkedinMatch[1]));
   }
 
   return links;
@@ -142,4 +238,8 @@ export function parseMetadata(text: string): PortfolioMetadata {
   metadata.links = extractLinks(text);
 
   return metadata;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

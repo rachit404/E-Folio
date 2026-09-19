@@ -23,37 +23,22 @@ export function stripComments(text: string): string {
     .join("\n");
 }
 
-export function cleanLatex(text: string): string {
-  let value = text;
+function isEscaped(text: string, index: number): boolean {
+  let slashCount = 0;
 
-  // Non-breaking spaces.
-  value = value.replace(/~/g, " ");
+  for (let cursor = index - 1; cursor >= 0; cursor--) {
+    if (text[cursor] !== "\\") {
+      break;
+    }
 
-  /*
-   * \href{url}{visible text}
-   * -> visible text
-   */
-  value = value.replace(/\\href\s*\{[^{}]*\}\s*\{([^{}]*)\}/g, "$1");
-
-  /*
-   * Layout commands must disappear completely.
-   *
-   * \vspace{-1pt}Education
-   * -> Education
-   */
-  const layoutCommands = ["vspace", "hspace", "raisebox"];
-
-  for (const command of layoutCommands) {
-    value = value.replace(
-      new RegExp(String.raw`\\${command}\s*(?:\[[^\]]*\])?\s*\{[^{}]*\}`, "g"),
-      "",
-    );
+    slashCount++;
   }
 
-  /*
-   * Formatting commands preserve their contents.
-   */
-  const formattingCommands = [
+  return slashCount % 2 === 1;
+}
+
+function unwrapSimpleCommands(value: string): string {
+  const commands = [
     "textbf",
     "textit",
     "emph",
@@ -61,27 +46,129 @@ export function cleanLatex(text: string): string {
     "textrm",
     "textsf",
     "texttt",
+    "textnormal",
     "small",
     "footnotesize",
+    "scriptsize",
+    "tiny",
     "large",
     "Large",
     "LARGE",
+    "huge",
     "Huge",
+    "HUGE",
+    "mbox",
+    "makebox",
+    "fbox",
   ];
 
-  for (const command of formattingCommands) {
-    value = value.replace(
-      new RegExp(String.raw`\\${command}\s*\{([^{}]*)\}`, "g"),
-      "$1",
+  let result = value;
+
+  /*
+   * Repeat because formatting commands can be nested:
+   *
+   * \textbf{\emph{Something}}
+   *
+   * The first pass removes one layer and the second
+   * removes the next.
+   */
+  for (let pass = 0; pass < 10; pass++) {
+    let changed = false;
+
+    for (const command of commands) {
+      const pattern = new RegExp(String.raw`\\${command}\s*\{([^{}]*)\}`, "g");
+
+      const next = result.replace(pattern, "$1");
+
+      if (next !== result) {
+        changed = true;
+        result = next;
+      }
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  return result;
+}
+
+function removeLayoutCommands(value: string): string {
+  let result = value;
+
+  const commands = [
+    "vspace",
+    "hspace",
+    "vspace*",
+    "hspace*",
+    "raisebox",
+    "kern",
+    "hskip",
+    "vskip",
+    "smallskip",
+    "medskip",
+    "bigskip",
+    "noindent",
+    "indent",
+    "newline",
+    "linebreak",
+    "pagebreak",
+    "newpage",
+    "clearpage",
+  ];
+
+  /*
+   * Commands with a braced argument.
+   */
+  for (const command of commands) {
+    const escapedCommand = command.replace("*", "\\*");
+
+    result = result.replace(
+      new RegExp(
+        String.raw`\\${escapedCommand}\s*(?:\[[^\]]*\])?\s*(?:\{[^{}]*\})?`,
+        "g",
+      ),
+      " ",
     );
   }
 
-  // Font Awesome commands.
-  value = value.replace(/\\fa[A-Za-z]+/g, "");
+  /*
+   * Explicit LaTeX line breaks.
+   */
+  result = result.replace(/\\\\(?:\[[^\]]*\])?/g, " ");
+
+  return result;
+}
+
+function removeRemainingCommands(value: string): string {
+  let result = value;
 
   /*
-   * Common LaTeX escapes.
+   * Remove commands which have one braced argument while
+   * preserving the argument itself.
    */
+  for (let pass = 0; pass < 10; pass++) {
+    const next = result.replace(/\\[a-zA-Z]+\*?\s*\{([^{}]*)\}/g, "$1");
+
+    if (next === result) {
+      break;
+    }
+
+    result = next;
+  }
+
+  /*
+   * Remove commands without arguments.
+   */
+  result = result.replace(/\\[a-zA-Z]+\*?(?:\[[^\]]*\])?/g, " ");
+
+  return result;
+}
+
+function decodeLatexEscapes(value: string): string {
+  let result = value;
+
   const replacements: Record<string, string> = {
     "\\&": "&",
     "\\%": "%",
@@ -90,23 +177,89 @@ export function cleanLatex(text: string): string {
     "\\_": "_",
     "\\{": "{",
     "\\}": "}",
+    "\\textbackslash": "\\",
     "---": "—",
     "--": "–",
     "``": '"',
     "''": '"',
+    "~": " ",
   };
 
+  /*
+   * Protect escaped braces from the generic brace removal
+   * by converting them before that stage.
+   */
   for (const [source, target] of Object.entries(replacements)) {
-    value = value.split(source).join(target);
+    result = result.split(source).join(target);
+  }
+
+  return result;
+}
+
+function removeStrayBraces(value: string): string {
+  return value.replace(/[{}]/g, "");
+}
+
+export function cleanLatex(text: string): string {
+  let value = text;
+
+  /*
+   * Normalize line endings first.
+   */
+  value = value.replace(/\r\n/g, "\n");
+
+  /*
+   * \href{url}{label}
+   *
+   * For visible text we keep the label.
+   *
+   * Example:
+   * \href{https://github.com/foo}{LearnPath AI}
+   * -> LearnPath AI
+   */
+  for (let pass = 0; pass < 10; pass++) {
+    const next = value.replace(/\\href\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, "$2");
+
+    if (next === value) {
+      break;
+    }
+
+    value = next;
   }
 
   /*
-   * Remove remaining simple commands.
+   * Remove layout-only commands.
    */
-  value = value.replace(/\\[a-zA-Z]+\*?(?:\[[^\]]*\])?/g, "");
+  value = removeLayoutCommands(value);
 
-  value = value.replace(/[{}]/g, "");
+  /*
+   * Remove Font Awesome/icon commands.
+   */
+  value = value.replace(/\\fa[A-Za-z]+(?:\[[^\]]*\])?/g, " ");
 
+  /*
+   * Remove common formatting wrappers.
+   */
+  value = unwrapSimpleCommands(value);
+
+  /*
+   * Remove remaining LaTeX commands.
+   */
+  value = removeRemainingCommands(value);
+
+  /*
+   * Decode escaped characters.
+   */
+  value = decodeLatexEscapes(value);
+
+  /*
+   * Remove any remaining structural braces.
+   */
+  value = removeStrayBraces(value);
+
+  /*
+   * Normalize whitespace.
+   */
   value = value.replace(/\s+/g, " ").trim();
 
   return value;

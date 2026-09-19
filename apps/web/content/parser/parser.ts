@@ -29,31 +29,59 @@ export interface ParsedPortfolio {
 
   sections: Array<{
     heading: string;
+
     kind: "projects" | "skills" | "positions" | "timeline" | "content";
+
     items: unknown[];
   }>;
 }
 
 /**
- * Parse a complete LaTeX resume into the portfolio
- * data structure consumed by the website.
+ * Parse a complete LaTeX resume.
  *
- * The parser intentionally works from LaTeX structure,
- * not from section names.
+ * Pipeline:
+ *
+ * .tex
+ *   ↓
+ * comment removal
+ *   ↓
+ * metadata extraction
+ *   ↓
+ * section extraction
+ *   ↓
+ * structural classification
+ *   ↓
+ * section-specific parsing
+ *   ↓
+ * LaTeX cleaning
+ *   ↓
+ * PortfolioSchema validation in loader
+ *
+ * The parser intentionally understands the structural
+ * conventions used by this portfolio's .tex resumes.
+ *
+ * It is NOT intended to be a general-purpose LaTeX parser.
  */
 export function parseDocument(
   source: string,
   sourceName: string,
 ): ParsedPortfolio {
+  if (typeof source !== "string") {
+    throw new TypeError("Portfolio source must be a string.");
+  }
+
+  if (!sourceName || !sourceName.trim()) {
+    throw new Error("Portfolio source name is required.");
+  }
+
   /*
-   * Remove comments BEFORE doing any structural parsing.
+   * Remove comments before any structural parsing.
    *
-   * This is important because commented-out commands
-   * such as:
+   * This prevents commented-out commands such as:
    *
    * % \resumeProject
    *
-   * must never reach the individual parsers.
+   * from becoming real portfolio records.
    */
   const sourceWithoutComments = stripComments(source);
 
@@ -98,12 +126,6 @@ export function parseDocument(
         items,
       };
     })
-    /*
-     * Don't expose completely empty sections to the UI.
-     *
-     * This is useful for LaTeX sections which may exist
-     * temporarily while being edited.
-     */
     .filter(
       (section) => section.heading.length > 0 || section.items.length > 0,
     );

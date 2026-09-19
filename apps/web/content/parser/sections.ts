@@ -11,18 +11,28 @@ export interface RawSection {
   body: string;
 }
 
+export type SectionKind =
+  | "projects"
+  | "skills"
+  | "positions"
+  | "timeline"
+  | "content";
+
 export function extractSections(text: string): RawSection[] {
   const sections: RawSection[] = [];
 
   /*
-   * Supports:
+   * Supports both:
    *
    * \section{Education}
-   * \section{\textbf{Technical Skills}}
    *
-   * We intentionally do not depend on section names.
+   * \section*{Education}
+   *
+   * and headings containing nested LaTeX:
+   *
+   * \section{\textbf{Personal Projects}}
    */
-  const pattern = /\\section\s*\{/g;
+  const pattern = /\\section\s*\*?\s*\{/g;
 
   let match: RegExpExecArray | null;
 
@@ -37,16 +47,16 @@ export function extractSections(text: string): RawSection[] {
 
       const bodyStart = headingEnd;
 
-      const nextSectionMatch = /\\section\s*\{/g;
+      const nextSectionPattern = /\\section\s*\*?\s*\{/g;
 
-      nextSectionMatch.lastIndex = bodyStart;
+      nextSectionPattern.lastIndex = bodyStart;
 
-      const nextMatch = nextSectionMatch.exec(text);
+      const nextSection = nextSectionPattern.exec(text);
 
       let bodyEnd: number;
 
-      if (nextMatch) {
-        bodyEnd = nextMatch.index;
+      if (nextSection) {
+        bodyEnd = nextSection.index;
       } else {
         const documentEnd = text.indexOf("\\end{document}", bodyStart);
 
@@ -55,9 +65,14 @@ export function extractSections(text: string): RawSection[] {
 
       sections.push({
         heading: cleanLatex(heading),
+
         body: text.slice(bodyStart, bodyEnd).trim(),
       });
     } catch {
+      /*
+       * A malformed section should not prevent
+       * later valid sections from being parsed.
+       */
       continue;
     }
   }
@@ -65,41 +80,47 @@ export function extractSections(text: string): RawSection[] {
   return sections;
 }
 
-export function classifySection(
-  body: string,
-): "projects" | "skills" | "positions" | "timeline" | "content" {
+export function classifySection(body: string): SectionKind {
   /*
-   * Detect the structural LaTeX pattern rather than
-   * relying on English section headings.
+   * Classification is structural.
+   *
+   * We deliberately do NOT check:
+   *
+   * "Education"
+   * "Experience"
+   * "Skills"
+   * "Projects"
+   *
+   * because role-specific .tex files may use
+   * different headings.
    */
 
-  // Projects
-  if (body.includes("\\resumeProject")) {
+  /*
+   * Most specific structures first.
+   */
+
+  if (/\\resumeProject\b/.test(body)) {
     return "projects";
   }
 
   /*
-   * Skills in the current resume use:
+   * Skills use:
    *
-   * \textbf{Languages}{: Java, Python, JavaScript, C}
+   * \textbf{Languages}{: Java, Python, ...}
    *
-   * Detect multiple category/value pairs.
+   * Any valid category/value pair is enough.
    */
-  const skillCategoryPattern = /\\textbf\s*\{[^{}]+\}\s*\{\s*:/g;
+  const skillPattern = /\\textbf\s*\{[^{}]+\}\s*\{\s*:/g;
 
-  const skillCategoryMatches = body.match(skillCategoryPattern) ?? [];
-
-  if (skillCategoryMatches.length >= 2) {
+  if (skillPattern.test(body)) {
     return "skills";
   }
 
-  // Positions / leadership
-  if (body.includes("\\resumePOR")) {
+  if (/\\resumePOR\b/.test(body)) {
     return "positions";
   }
 
-  // Education / professional experience
-  if (body.includes("\\resumeSubheading")) {
+  if (/\\resumeSubheading\b/.test(body)) {
     return "timeline";
   }
 
@@ -109,36 +130,40 @@ export function classifySection(
 export function parseTimelineSection(body: string): Record<string, unknown>[] {
   const items: Record<string, unknown>[] = [];
 
-  for (const args of parseCommandArguments(body, "resumeSubheading", 4)) {
-    const [organization, secondary, role, dates] = args;
+  /*
+   * Current resume format:
+   *
+   * \resumeSubheading
+   *   {Organization}
+   *   {Secondary}
+   *   {Role}
+   *   {Dates}
+   */
+  const timelineArguments = parseCommandArguments(body, "resumeSubheading", 4);
+
+  /*
+   * Extract all item-list blocks in their original
+   * document order.
+   */
+  const lists = extractResumeItemLists(body);
+
+  for (let index = 0; index < timelineArguments.length; index++) {
+    const [organization, secondary, role, dates] = timelineArguments[index];
 
     items.push({
       organization: cleanLatex(organization),
+
       secondary: cleanLatex(secondary),
+
       role: cleanLatex(role),
+
       dates: cleanLatex(dates),
-      details: [],
+
+      details:
+        index < lists.length
+          ? extractItemsFromList(lists[index], cleanLatex)
+          : [],
     });
-  }
-
-  /*
-   * Associate each resumeItemList with the
-   * corresponding timeline item.
-   */
-  const lists: string[] = [];
-
-  const listPattern = /\\resumeItemListStart([\s\S]*?)\\resumeItemListEnd/g;
-
-  let listMatch: RegExpExecArray | null;
-
-  while ((listMatch = listPattern.exec(body)) !== null) {
-    lists.push(listMatch[1]);
-  }
-
-  for (let index = 0; index < lists.length; index++) {
-    if (index < items.length) {
-      items[index].details = extractItemsFromList(lists[index], cleanLatex);
-    }
   }
 
   return items;
@@ -148,29 +173,24 @@ export function parseProjectSection(body: string): Record<string, unknown>[] {
   const items: Record<string, unknown>[] = [];
 
   /*
-   * Current resume structure:
+   * Current project format is intentionally handled
+   * explicitly:
    *
    * \resumeProject
    *   {\href{URL}{Project Name}}
    *   {Description}
    *
-   * Projects currently have 2 meaningful arguments.
-   *
-   * We therefore parse the command manually rather than
-   * assuming the older 4-argument template.
+   * The current resume has TWO meaningful arguments.
    */
+  const pattern = /\\resumeProject\b/g;
 
-  const projectPattern = /\\resumeProject\b/g;
+  let match: RegExpExecArray | null;
 
-  let projectMatch: RegExpExecArray | null;
-
-  while ((projectMatch = projectPattern.exec(body)) !== null) {
-    let position = (projectMatch.index ?? 0) + projectMatch[0].length;
+  while ((match = pattern.exec(body)) !== null) {
+    let position = (match.index ?? 0) + match[0].length;
 
     try {
-      while (position < body.length && /\s/.test(body[position])) {
-        position++;
-      }
+      position = skipWhitespace(body, position);
 
       if (body[position] !== "{") {
         continue;
@@ -178,11 +198,7 @@ export function parseProjectSection(body: string): Record<string, unknown>[] {
 
       const [nameRaw, afterName] = extractBraced(body, position);
 
-      position = afterName;
-
-      while (position < body.length && /\s/.test(body[position])) {
-        position++;
-      }
+      position = skipWhitespace(body, afterName);
 
       if (body[position] !== "{") {
         continue;
@@ -192,23 +208,57 @@ export function parseProjectSection(body: string): Record<string, unknown>[] {
 
       position = afterDescription;
 
+      let name = nameRaw;
+
+      let repositoryUrl: string | undefined;
+
       /*
-       * Extract URL from:
+       * Extract:
        *
        * \href{https://...}{Project Name}
        */
       const hrefMatch = nameRaw.match(/\\href\s*\{([^{}]+)\}\s*\{([^{}]+)\}/);
 
-      let name = nameRaw;
-      let repositoryUrl: string | undefined;
-
       if (hrefMatch) {
-        repositoryUrl = hrefMatch[1];
+        repositoryUrl = cleanLatex(hrefMatch[1]);
+
         name = hrefMatch[2];
       }
 
-      const project: Record<string, unknown> = {
+      /*
+       * The project body extends until the next
+       * \resumeProject command.
+       */
+      const remaining = body.slice(position);
+
+      const nextProject = remaining.search(/\\resumeProject\b/);
+
+      const projectBody =
+        nextProject === -1 ? remaining : remaining.slice(0, nextProject);
+
+      const listMatch = projectBody.match(
+        /\\resumeItemListStart\b([\s\S]*?)\\resumeItemListEnd\b/,
+      );
+
+      const details = listMatch
+        ? extractItemsFromList(listMatch[1], cleanLatex)
+        : [];
+
+      const links: Array<{
+        label: string;
+        url: string;
+      }> = [];
+
+      if (repositoryUrl) {
+        links.push({
+          label: "repository",
+          url: repositoryUrl,
+        });
+      }
+
+      items.push({
         name: cleanLatex(name),
+
         description: cleanLatex(descriptionRaw),
 
         metadata: {
@@ -216,42 +266,15 @@ export function parseProjectSection(body: string): Record<string, unknown>[] {
           secondary: "",
         },
 
-        details: [],
-        links: [],
-      };
+        details,
 
-      if (repositoryUrl) {
-        project.links = [
-          {
-            label: "repository",
-            url: repositoryUrl,
-          },
-        ];
-      }
-
-      /*
-       * Find the first item list after this project
-       * and before the next project.
-       */
-      const remainingBody = body.slice(position);
-
-      const nextProjectIndex = remainingBody.search(/\\resumeProject\b/);
-
-      const projectBody =
-        nextProjectIndex === -1
-          ? remainingBody
-          : remainingBody.slice(0, nextProjectIndex);
-
-      const listMatch = projectBody.match(
-        /\\resumeItemListStart([\s\S]*?)\\resumeItemListEnd/,
-      );
-
-      if (listMatch) {
-        project.details = extractItemsFromList(listMatch[1], cleanLatex);
-      }
-
-      items.push(project);
+        links,
+      });
     } catch {
+      /*
+       * Ignore a malformed project and continue
+       * searching for the next project.
+       */
       continue;
     }
   }
@@ -263,17 +286,14 @@ export function parseSkillSection(body: string): Record<string, string>[] {
   const skills: Record<string, string>[] = [];
 
   /*
-   * Current resume structure:
+   * Current format:
    *
    * \textbf{Languages}{: Java, Python, JavaScript, C} \\
-   * \textbf{Frameworks}{: React.js, Vite.js, Node.js} \\
+   * \textbf{Frameworks}{: React.js, Vite.js, ...} \\
    *
-   * We extract the category and then split the
-   * values into individual skill records.
-   *
-   * The section heading is intentionally irrelevant.
+   * We use the LaTeX structure rather than the
+   * section heading.
    */
-
   const pattern = /\\textbf\s*\{([^{}]+)\}\s*\{\s*:\s*([^{}]*)\}/g;
 
   let match: RegExpExecArray | null;
@@ -305,7 +325,9 @@ export function parsePositionsSection(body: string): Record<string, string>[] {
 
     items.push({
       title: cleanLatex(title),
+
       organization: cleanLatex(organization),
+
       dates: cleanLatex(dates),
     });
   }
@@ -329,4 +351,28 @@ export function parseGenericSection(body: string): { text: string }[] {
   }
 
   return result;
+}
+
+function extractResumeItemLists(body: string): string[] {
+  const lists: string[] = [];
+
+  const pattern = /\\resumeItemListStart\b([\s\S]*?)\\resumeItemListEnd\b/g;
+
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(body)) !== null) {
+    lists.push(match[1]);
+  }
+
+  return lists;
+}
+
+function skipWhitespace(text: string, start: number): number {
+  let position = start;
+
+  while (position < text.length && /\s/.test(text[position])) {
+    position++;
+  }
+
+  return position;
 }
