@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
+
+import AccessControl from "@/components/navigation/AccessControl";
 
 interface PortfolioNavProps {
   profiles: string[];
@@ -8,12 +10,36 @@ interface PortfolioNavProps {
 }
 
 const navigation = [
-  { label: "HOME", href: "#home", id: "home" },
-  { label: "ABOUT", href: "#about", id: "about" },
-  { label: "EXPERIENCE", href: "#experience", id: "experience" },
-  { label: "SKILLS", href: "#skills", id: "skills" },
-  { label: "PROJECTS", href: "#projects", id: "projects" },
-  { label: "CONTACT", href: "#contact", id: "contact" },
+  {
+    label: "HOME",
+    href: "#home",
+    id: "home",
+  },
+  {
+    label: "ABOUT",
+    href: "#about",
+    id: "about",
+  },
+  {
+    label: "EXPERIENCE",
+    href: "#experience",
+    id: "experience",
+  },
+  {
+    label: "SKILLS",
+    href: "#skills",
+    id: "skills",
+  },
+  {
+    label: "PROJECTS",
+    href: "#projects",
+    id: "projects",
+  },
+  {
+    label: "CONTACT",
+    href: "#contact",
+    id: "contact",
+  },
 ];
 
 function formatRole(role: string): string {
@@ -25,23 +51,81 @@ export default function PortfolioNav({
   activeRole,
 }: PortfolioNavProps) {
   const [open, setOpen] = useState(false);
+
   const [activeSection, setActiveSection] = useState("home");
+
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const closeMenu = () => {
-    setOpen(false);
-  };
+  /*
+   * Allow UnlockSystem to close the
+   * mobile navigation.
+   */
+  useEffect(() => {
+    const handleCloseNavigation = () => {
+      setOpen(false);
+    };
 
-  const switchRole = (role: string) => {
-    window.location.href = `/${encodeURIComponent(role)}#home`;
-  };
+    window.addEventListener("e-folio-close-navigation", handleCloseNavigation);
 
+    return () => {
+      window.removeEventListener(
+        "e-folio-close-navigation",
+        handleCloseNavigation,
+      );
+    };
+  }, []);
+
+  /*
+   * Escape closes mobile navigation.
+   *
+   * AccessControl independently handles
+   * its own Escape behavior.
+   */
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+
+      window.removeEventListener("keydown", handleKeyDown);
+
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [open]);
+
+  /*
+   * Active section observer.
+   */
   useEffect(() => {
     const sections = navigation
       .map((item) => document.getElementById(item.id))
       .filter((section): section is HTMLElement => Boolean(section));
 
-    if (!sections.length) return;
+    if (!sections.length) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -64,6 +148,9 @@ export default function PortfolioNav({
     return () => observer.disconnect();
   }, []);
 
+  /*
+   * Scroll progress.
+   */
   useEffect(() => {
     let frame = 0;
 
@@ -71,6 +158,7 @@ export default function PortfolioNav({
       frame = 0;
 
       const scrollTop = window.scrollY;
+
       const scrollable =
         document.documentElement.scrollHeight - window.innerHeight;
 
@@ -100,53 +188,31 @@ export default function PortfolioNav({
       }
 
       window.removeEventListener("scroll", handleScroll);
+
       window.removeEventListener("resize", updateProgress);
     };
   }, []);
 
-  useEffect(() => {
-    if (!open) {
-      document.body.style.overflow = "";
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [open]);
-
+  /*
+   * Navigation.
+   *
+   * React's MouseEvent is explicitly aliased
+   * so it cannot conflict with the native DOM
+   * MouseEvent used by AccessControl.
+   */
   const navigateToSection = (
-    event: MouseEvent<HTMLAnchorElement>,
+    event: ReactMouseEvent<HTMLAnchorElement>,
     id: string,
   ) => {
     event.preventDefault();
 
-    closeMenu();
+    setOpen(false);
 
     const target = document.getElementById(id);
 
-    if (!target) return;
+    if (!target) {
+      return;
+    }
 
     const headerOffset = 12;
 
@@ -159,6 +225,10 @@ export default function PortfolioNav({
       top: Math.max(0, targetPosition),
       behavior: "smooth",
     });
+  };
+
+  const switchRole = (role: string) => {
+    window.location.href = `/${encodeURIComponent(role)}#home`;
   };
 
   return (
@@ -175,6 +245,7 @@ export default function PortfolioNav({
 
       <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-6 md:px-10">
+          {/* Logo */}
           <a
             href="#home"
             onClick={(event) => navigateToSection(event, "home")}
@@ -191,7 +262,7 @@ export default function PortfolioNav({
             </div>
           </a>
 
-          {/* Desktop navigation */}
+          {/* Desktop */}
           <div className="hidden items-center gap-8 md:flex">
             <nav
               aria-label="Primary navigation"
@@ -234,7 +305,7 @@ export default function PortfolioNav({
               })}
             </nav>
 
-            {/* Role switcher */}
+            {/* Role */}
             {profiles.length > 0 && (
               <div className="relative border-l border-white/10 pl-6">
                 <label
@@ -263,9 +334,12 @@ export default function PortfolioNav({
                 </span>
               </div>
             )}
+
+            {/* Access */}
+            <AccessControl />
           </div>
 
-          {/* Mobile menu */}
+          {/* Mobile menu button */}
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
@@ -345,7 +419,7 @@ export default function PortfolioNav({
             })}
           </div>
 
-          {/* Mobile role switcher */}
+          {/* Mobile role */}
           {profiles.length > 0 && (
             <div className="mt-8 border-t border-white/10 pt-6">
               <label
@@ -371,8 +445,14 @@ export default function PortfolioNav({
             </div>
           )}
 
+          {/* Mobile Access */}
+          <div className="mt-8 border-t border-white/10 pt-6">
+            <AccessControl mobile />
+          </div>
+
           <div className="portfolio-mono mt-10 flex justify-between text-[7px] tracking-[0.16em] text-[var(--color-dim)]">
             <span>E-FOLIO / NAV</span>
+
             <span>ESC / CLOSE</span>
           </div>
         </nav>

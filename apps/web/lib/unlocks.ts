@@ -101,7 +101,17 @@ export function resetUnlockSection(section: UnlockableSection): UnlockState {
 }
 
 export function resetUnlockState(): UnlockState {
-  saveUnlockState(DEFAULT_UNLOCK_STATE);
+  if (typeof window === "undefined") {
+    return DEFAULT_UNLOCK_STATE;
+  }
+
+  window.localStorage.removeItem(UNLOCK_STORAGE_KEY);
+
+  window.dispatchEvent(
+    new CustomEvent("e-folio-unlocks-changed", {
+      detail: DEFAULT_UNLOCK_STATE,
+    }),
+  );
 
   return DEFAULT_UNLOCK_STATE;
 }
