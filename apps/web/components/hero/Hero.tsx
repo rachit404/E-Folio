@@ -358,7 +358,7 @@ export default function Hero({ portfolio, theme }: HeroProps) {
           className="absolute bottom-6 right-0 z-10 hidden aspect-square w-[38vw] max-w-[520px] md:block"
         >
           <div data-engineering-core-visual className="absolute inset-0">
-            <EngineeringCore model={theme.hero.model} />
+            <EngineeringCore character={theme.hero.character} />
 
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_30px_var(--color-cyan)]" />

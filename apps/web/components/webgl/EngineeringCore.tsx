@@ -1,14 +1,17 @@
 "use client";
 
-import { Suspense, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
+
 import { Canvas, useFrame } from "@react-three/fiber";
+
 import { Float, PerspectiveCamera } from "@react-three/drei";
+
 import * as THREE from "three";
 
-import DynamicModel from "./DynamicModel";
+import CharacterFactory from "./characters/CharacterFactory";
 
 interface EngineeringCoreProps {
-  model?: string;
+  character?: string;
 }
 
 function Particles() {
@@ -22,7 +25,9 @@ function Particles() {
       const i3 = i * 3;
 
       data[i3] = (Math.random() - 0.5) * 12;
+
       data[i3 + 1] = (Math.random() - 0.5) * 8;
+
       data[i3 + 2] = (Math.random() - 0.5) * 8;
     }
 
@@ -33,6 +38,7 @@ function Particles() {
     if (!points.current) return;
 
     points.current.rotation.y += delta * 0.012;
+
     points.current.rotation.x += delta * 0.003;
   });
 
@@ -68,6 +74,7 @@ function EnergyRing({
     if (!ring.current) return;
 
     ring.current.rotation.x += delta * speed;
+
     ring.current.rotation.y += delta * speed * 0.7;
   });
 
@@ -82,17 +89,21 @@ function EnergyRing({
 
 function CoreGeometry() {
   const outer = useRef<THREE.Group>(null);
+
   const inner = useRef<THREE.Mesh>(null);
 
   useFrame((_, delta) => {
     if (outer.current) {
       outer.current.rotation.x += delta * 0.1;
+
       outer.current.rotation.y += delta * 0.17;
+
       outer.current.rotation.z += delta * 0.06;
     }
 
     if (inner.current) {
       inner.current.rotation.x -= delta * 0.22;
+
       inner.current.rotation.y -= delta * 0.3;
     }
   });
@@ -139,7 +150,7 @@ function CoreGeometry() {
           <meshBasicMaterial color="#00e5ff" />
         </mesh>
 
-        <EnergyRing radius={2.0} color="#00e5ff" speed={0.14} />
+        <EnergyRing radius={2} color="#00e5ff" speed={0.14} />
 
         <EnergyRing radius={2.25} color="#ff2147" speed={-0.09} />
       </group>
@@ -147,13 +158,14 @@ function CoreGeometry() {
   );
 }
 
-function Scene({ model }: { model?: string }) {
+function Scene({ character }: { character?: string }) {
   const camera = useRef<THREE.PerspectiveCamera>(null);
 
   useFrame((state) => {
     if (!camera.current) return;
 
     const targetX = state.pointer.x * 0.35;
+
     const targetY = state.pointer.y * 0.2;
 
     camera.current.position.x += (targetX - camera.current.position.x) * 0.02;
@@ -201,20 +213,18 @@ function Scene({ model }: { model?: string }) {
 
       <Particles />
 
-      <Suspense fallback={null}>
-        {model ? (
-          <Float speed={1} rotationIntensity={0.15} floatIntensity={0.15}>
-            <DynamicModel src={model} scale={1.6} />
-          </Float>
-        ) : (
-          <CoreGeometry />
-        )}
-      </Suspense>
+      {character ? (
+        <Float speed={1} rotationIntensity={0.15} floatIntensity={0.15}>
+          <CharacterFactory id={character} />
+        </Float>
+      ) : (
+        <CoreGeometry />
+      )}
     </>
   );
 }
 
-export default function EngineeringCore({ model }: EngineeringCoreProps) {
+export default function EngineeringCore({ character }: EngineeringCoreProps) {
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -226,7 +236,7 @@ export default function EngineeringCore({ model }: EngineeringCoreProps) {
           powerPreference: "high-performance",
         }}
       >
-        <Scene model={model} />
+        <Scene character={character} />
       </Canvas>
     </div>
   );

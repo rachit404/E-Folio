@@ -22,7 +22,7 @@ export interface PortfolioTheme {
   hero: {
     backgroundImage: string;
     foregroundImage: string;
-    model: string;
+    character: string;
     eyebrow: string;
     status: string;
     cta: string;

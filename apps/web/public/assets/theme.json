@@ -17,7 +17,7 @@
   "hero": {
     "backgroundImage": "",
     "foregroundImage": "",
-    "model": "",
+    "character": "titan",
     "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
     "status": "SYSTEM ONLINE",
     "cta": "ENTER PORTFOLIO",
