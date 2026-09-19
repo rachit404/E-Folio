@@ -8,10 +8,21 @@ import type { PortfolioData } from "@/content/schema/portfolio";
 import type { PortfolioTheme } from "@/lib/theme";
 
 import SceneFrame from "@/components/layout/SceneFrame";
-import EngineeringCore from "@/components/webgl/EngineeringCore";
+import dynamic from "next/dynamic";
 import HeroAtmosphere from "@/components/hero/HeroAtmosphere";
 
 gsap.registerPlugin(ScrollTrigger);
+const EngineeringCore = dynamic(
+  () => import("@/components/webgl/EngineeringCore"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="h-2 w-2 bg-[var(--color-cyan)] shadow-[0_0_25px_var(--color-cyan)]" />
+      </div>
+    ),
+  },
+);
 
 interface HeroProps {
   portfolio: PortfolioData;
@@ -41,11 +52,28 @@ export default function Hero({ portfolio, theme }: HeroProps) {
       const title = hero.querySelector("[data-hero-title]");
       const subtitle = hero.querySelector("[data-hero-subtitle]");
       const cta = hero.querySelector("[data-hero-cta]");
-      const core = hero.querySelector("[data-engineering-core]");
+      const coreParallax = hero.querySelector(
+        "[data-engineering-core-parallax]",
+      );
+      const coreVisual = hero.querySelector("[data-engineering-core-visual]");
       const status = hero.querySelector("[data-hero-status]");
       const coordinates = hero.querySelector("[data-hero-coordinates]");
       const background = hero.querySelector("[data-hero-background]");
       const grid = hero.querySelector("[data-hero-grid]");
+
+      /*
+       * ------------------------------------------------------------
+       * HERO INTRO
+       * ------------------------------------------------------------
+       *
+       * Important:
+       *
+       * The EngineeringCore itself is NOT animated by GSAP.
+       *
+       * Only its outer parallax wrapper is animated.
+       *
+       * This prevents GSAP transforms from fighting with R3F.
+       */
 
       const intro = gsap.timeline({
         defaults: {
@@ -108,16 +136,14 @@ export default function Hero({ portfolio, theme }: HeroProps) {
           "-=0.4",
         )
         .fromTo(
-          core,
+          coreParallax,
           {
             opacity: 0,
-            scale: 0.7,
-            rotation: -20,
+            y: 40,
           },
           {
             opacity: 1,
-            scale: 1,
-            rotation: 0,
+            y: 0,
             duration: 1.3,
             ease: "expo.out",
           },
@@ -145,6 +171,12 @@ export default function Hero({ portfolio, theme }: HeroProps) {
           },
           "-=0.4",
         );
+
+      /*
+       * ------------------------------------------------------------
+       * BACKGROUND PARALLAX
+       * ------------------------------------------------------------
+       */
 
       if (grid) {
         gsap.to(grid, {
@@ -175,10 +207,22 @@ export default function Hero({ portfolio, theme }: HeroProps) {
         });
       }
 
-      if (core) {
-        gsap.to(core, {
+      /*
+       * ------------------------------------------------------------
+       * ENGINEERING CORE PARALLAX
+       * ------------------------------------------------------------
+       *
+       * ONLY the wrapper moves.
+       *
+       * No GSAP rotation.
+       * No GSAP scale.
+       *
+       * The actual R3F canvas remains completely independent.
+       */
+
+      if (coreParallax) {
+        gsap.to(coreParallax, {
           yPercent: -18,
-          rotation: "+=40",
           duration: 1,
           ease: "none",
           scrollTrigger: {
@@ -189,7 +233,29 @@ export default function Hero({ portfolio, theme }: HeroProps) {
           },
         });
       }
+
+      /*
+       * Explicitly reset the visual layer.
+       *
+       * The visual layer itself should never receive a GSAP transform.
+       */
+
+      if (coreVisual) {
+        gsap.set(coreVisual, {
+          clearProps: "transform",
+        });
+      }
     }, hero);
+
+    /*
+     * Complete cleanup when the Hero unmounts.
+     *
+     * This kills:
+     * - timelines
+     * - ScrollTriggers
+     * - transforms
+     * - inline GSAP state
+     */
 
     return () => {
       context.revert();
@@ -240,6 +306,7 @@ export default function Hero({ portfolio, theme }: HeroProps) {
               className="portfolio-display max-w-6xl text-[clamp(4.5rem,13vw,12rem)] font-black leading-[0.76] tracking-[-0.06em]"
             >
               {portfolio.metadata.name}
+
               <span className="text-[var(--color-red)]">.</span>
             </h1>
 
@@ -272,19 +339,35 @@ export default function Hero({ portfolio, theme }: HeroProps) {
           </div>
         </div>
 
+        {/*
+         * ----------------------------------------------------------
+         * ENGINEERING CORE
+         * ----------------------------------------------------------
+         *
+         * wrapper:
+         *   GSAP parallax
+         *
+         * visual:
+         *   R3F only
+         *
+         * This separation is intentional.
+         */}
+
         <div
-          data-engineering-core
+          data-engineering-core-parallax
           className="absolute bottom-6 right-0 z-10 hidden aspect-square w-[38vw] max-w-[520px] md:block"
         >
-          <EngineeringCore model={theme.hero.model} />
+          <div data-engineering-core-visual className="absolute inset-0">
+            <EngineeringCore model={theme.hero.model} />
 
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_30px_var(--color-cyan)]" />
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_30px_var(--color-cyan)]" />
 
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-              <span className="portfolio-mono text-[8px] tracking-[0.25em] text-[var(--color-cyan)]">
-                ENGINEERING CORE
-              </span>
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="portfolio-mono text-[8px] tracking-[0.25em] text-[var(--color-cyan)]">
+                  ENGINEERING CORE
+                </span>
+              </div>
             </div>
           </div>
         </div>

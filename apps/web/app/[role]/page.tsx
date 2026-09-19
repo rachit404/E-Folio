@@ -9,7 +9,6 @@ import Hero from "@/components/hero/Hero";
 import AboutScene from "@/components/about/AboutScene";
 import ExperienceScene from "@/components/experience/ExperienceScene";
 import SkillsScene from "@/components/skills/SkillsScene";
-import PlaceholderScene from "@/components/scenes/PlaceholderScene";
 import ProjectsScene from "@/components/projects/ProjectsScene";
 import ContactScene from "@/components/contact/ContactScene";
 
