@@ -2,8 +2,6 @@
 
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 
-import AccessControl from "@/components/navigation/AccessControl";
-
 interface PortfolioNavProps {
   profiles: string[];
   activeRole: string;
@@ -51,35 +49,14 @@ export default function PortfolioNav({
   activeRole,
 }: PortfolioNavProps) {
   const [open, setOpen] = useState(false);
-
   const [activeSection, setActiveSection] = useState("home");
-
   const [scrollProgress, setScrollProgress] = useState(0);
 
   /*
-   * Allow UnlockSystem to close the
-   * mobile navigation.
-   */
-  useEffect(() => {
-    const handleCloseNavigation = () => {
-      setOpen(false);
-    };
-
-    window.addEventListener("e-folio-close-navigation", handleCloseNavigation);
-
-    return () => {
-      window.removeEventListener(
-        "e-folio-close-navigation",
-        handleCloseNavigation,
-      );
-    };
-  }, []);
-
-  /*
-   * Escape closes mobile navigation.
+   * Mobile navigation behavior.
    *
-   * AccessControl independently handles
-   * its own Escape behavior.
+   * Navigation itself is completely unrestricted.
+   * There is no unlock/access state involved.
    */
   useEffect(() => {
     if (!open) {
@@ -103,20 +80,19 @@ export default function PortfolioNav({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     window.addEventListener("resize", handleResize);
 
     return () => {
       document.body.style.overflow = previousOverflow;
 
       window.removeEventListener("keydown", handleKeyDown);
-
       window.removeEventListener("resize", handleResize);
     };
   }, [open]);
 
   /*
-   * Active section observer.
+   * Track the section currently visible
+   * in the viewport.
    */
   useEffect(() => {
     const sections = navigation
@@ -149,7 +125,7 @@ export default function PortfolioNav({
   }, []);
 
   /*
-   * Scroll progress.
+   * Global page scroll progress.
    */
   useEffect(() => {
     let frame = 0;
@@ -188,17 +164,14 @@ export default function PortfolioNav({
       }
 
       window.removeEventListener("scroll", handleScroll);
-
       window.removeEventListener("resize", updateProgress);
     };
   }, []);
 
   /*
-   * Navigation.
+   * Navigate directly to a portfolio section.
    *
-   * React's MouseEvent is explicitly aliased
-   * so it cannot conflict with the native DOM
-   * MouseEvent used by AccessControl.
+   * There is intentionally no access check here.
    */
   const navigateToSection = (
     event: ReactMouseEvent<HTMLAnchorElement>,
@@ -262,7 +235,7 @@ export default function PortfolioNav({
             </div>
           </a>
 
-          {/* Desktop */}
+          {/* Desktop navigation */}
           <div className="hidden items-center gap-8 md:flex">
             <nav
               aria-label="Primary navigation"
@@ -305,7 +278,7 @@ export default function PortfolioNav({
               })}
             </nav>
 
-            {/* Role */}
+            {/* Role selector */}
             {profiles.length > 0 && (
               <div className="relative border-l border-white/10 pl-6">
                 <label
@@ -334,9 +307,6 @@ export default function PortfolioNav({
                 </span>
               </div>
             )}
-
-            {/* Access */}
-            <AccessControl />
           </div>
 
           {/* Mobile menu button */}
@@ -419,7 +389,7 @@ export default function PortfolioNav({
             })}
           </div>
 
-          {/* Mobile role */}
+          {/* Mobile role selector */}
           {profiles.length > 0 && (
             <div className="mt-8 border-t border-white/10 pt-6">
               <label
@@ -445,14 +415,8 @@ export default function PortfolioNav({
             </div>
           )}
 
-          {/* Mobile Access */}
-          <div className="mt-8 border-t border-white/10 pt-6">
-            <AccessControl mobile />
-          </div>
-
           <div className="portfolio-mono mt-10 flex justify-between text-[7px] tracking-[0.16em] text-[var(--color-dim)]">
             <span>E-FOLIO / NAV</span>
-
             <span>ESC / CLOSE</span>
           </div>
         </nav>
