@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { listProfiles, loadPortfolio } from "@/content/loader/portfolio";
-
 import { loadTheme } from "@/lib/theme";
 
 import PortfolioShell from "@/components/layout/PortfolioShell";
+import PortfolioWorld from "@/components/layout/PortfolioWorld";
+
 import Hero from "@/components/hero/Hero";
 import AboutScene from "@/components/about/AboutScene";
 import ExperienceScene from "@/components/experience/ExperienceScene";
@@ -25,10 +26,6 @@ export default async function RolePage({ params }: RolePageProps) {
 
   const activeRole = role.trim().toLowerCase();
 
-  /*
-   * Only .tex files discovered by the loader
-   * can become valid portfolio roles.
-   */
   if (!profiles.includes(activeRole)) {
     notFound();
   }
@@ -40,17 +37,19 @@ export default async function RolePage({ params }: RolePageProps) {
 
   return (
     <PortfolioShell theme={theme} profiles={profiles} activeRole={activeRole}>
-      <Hero portfolio={portfolio} theme={theme} />
+      <PortfolioWorld theme={theme}>
+        <Hero portfolio={portfolio} theme={theme} />
 
-      <AboutScene portfolio={portfolio} />
+        <AboutScene portfolio={portfolio} />
 
-      <ExperienceScene portfolio={portfolio} />
+        <ExperienceScene portfolio={portfolio} />
 
-      <SkillsScene portfolio={portfolio} />
+        <SkillsScene portfolio={portfolio} />
 
-      <ProjectsScene portfolio={portfolio} />
+        <ProjectsScene portfolio={portfolio} />
 
-      <ContactScene portfolio={portfolio} />
+        <ContactScene portfolio={portfolio} />
+      </PortfolioWorld>
     </PortfolioShell>
   );
 }
