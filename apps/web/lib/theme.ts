@@ -32,6 +32,22 @@ export interface PortfolioTheme {
   navigation: {
     showNumbers: boolean;
   };
+
+  world?: {
+    defaultWorld?: string;
+    backgroundOpacity?: number;
+    enableParallax?: boolean;
+    enableAtmosphere?: boolean;
+  };
+
+  mascot?: {
+    id?: string;
+    enabled?: boolean;
+    scale?: number;
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+  };
 }
 
 export async function loadTheme(): Promise<PortfolioTheme> {

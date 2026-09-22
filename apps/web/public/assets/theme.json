@@ -4,6 +4,7 @@
     "shortName": "RD",
     "universe": "E-FOLIO"
   },
+
   "colors": {
     "void": "#050608",
     "graphite": "#0b0e12",
@@ -14,16 +15,34 @@
     "muted": "#8b949e",
     "dim": "#4d5660"
   },
+
   "hero": {
     "backgroundImage": "",
     "foregroundImage": "",
-    "character": "titan",
+    "character": "spider-engineer",
     "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
     "status": "SYSTEM ONLINE",
     "cta": "ENTER PORTFOLIO",
     "scrollLabel": "SCROLL TO EXPLORE"
   },
+
   "navigation": {
     "showNumbers": true
+  },
+
+  "world": {
+    "defaultWorld": "home",
+    "backgroundOpacity": 0.9,
+    "enableParallax": true,
+    "enableAtmosphere": true
+  },
+
+  "mascot": {
+    "id": "spider-engineer",
+    "enabled": true,
+    "scale": 0.78,
+    "primary": "#b51232",
+    "secondary": "#0b1530",
+    "accent": "#00e5ff"
   }
 }
