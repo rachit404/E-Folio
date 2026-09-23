@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+
 import gsap from "gsap";
+
+import { usePortfolioWorld } from "@/components/world/context/PortfolioWorldContext";
 
 interface ProjectLink {
   label: string;
@@ -33,14 +36,46 @@ export default function ProjectCaseStudy({
   onClose,
 }: ProjectCaseStudyProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+  const { setWorld } = usePortfolioWorld();
+
+  /*
+   * Case Study is an interaction-driven sub-world.
+   *
+   * It is not a normal scroll section, so entering
+   * the case study explicitly changes the world state.
+   */
+  useEffect(() => {
+    setWorld("case-study");
+  }, [setWorld]);
+
+  /*
+   * Centralized close handler.
+   *
+   * ProjectsScene owns the actual selected-project state,
+   * while this component tells the world system that we
+   * are leaving Case Study.
+   */
+  const handleClose = useCallback(() => {
+    setWorld("projects");
+    onClose();
+  }, [onClose, setWorld]);
+
+  /*
+   * Lock the main document while the case study owns
+   * the viewport.
+   */
   useEffect(() => {
     const body = document.body;
 
     const previousPosition = body.style.position;
+
     const previousTop = body.style.top;
+
     const previousWidth = body.style.width;
+
     const previousOverflow = body.style.overflow;
 
     body.style.position = "fixed";
@@ -51,7 +86,7 @@ export default function ProjectCaseStudy({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        handleClose();
       }
     };
 
@@ -63,11 +98,15 @@ export default function ProjectCaseStudy({
 
     return () => {
       window.clearTimeout(focusTimer);
+
       document.removeEventListener("keydown", handleKeyDown);
 
       body.style.position = previousPosition;
+
       body.style.top = previousTop;
+
       body.style.width = previousWidth;
+
       body.style.overflow = previousOverflow;
 
       window.scrollTo({
@@ -76,8 +115,11 @@ export default function ProjectCaseStudy({
         behavior: "instant",
       });
     };
-  }, [onClose, scrollY]);
+  }, [handleClose, scrollY]);
 
+  /*
+   * Cinematic entrance animation.
+   */
   useEffect(() => {
     const root = rootRef.current;
 
@@ -279,7 +321,7 @@ export default function ProjectCaseStudy({
             <button
               ref={closeButtonRef}
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="portfolio-mono flex items-center gap-3 border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all hover:border-[var(--color-red)]/50 hover:text-[var(--color-red)] focus:border-[var(--color-cyan)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-cyan)]/40"
               aria-label="Close project case study"
             >
@@ -472,7 +514,7 @@ export default function ProjectCaseStudy({
 
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="portfolio-mono text-[8px] tracking-[0.14em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)] focus:outline-none"
             >
               RETURN TO ARCHIVE ↑

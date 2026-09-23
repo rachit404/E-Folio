@@ -98,7 +98,7 @@ export const WORLD_CONFIGS: Record<WorldId, WorldConfig> = {
 
   skills: {
     id: "skills",
-    number: "04",
+    number: "05",
     label: "SKILLS / CAPABILITY MATRIX",
     background: "/assets/worlds/skills.png",
     camera: {
@@ -117,7 +117,7 @@ export const WORLD_CONFIGS: Record<WorldId, WorldConfig> = {
 
   contact: {
     id: "contact",
-    number: "05",
+    number: "06",
     label: "TRANSMISSION / CONTACT",
     background: "/assets/worlds/contact.png",
     camera: {

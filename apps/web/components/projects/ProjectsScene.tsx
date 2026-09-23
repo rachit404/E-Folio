@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-import type { PortfolioData } from "@/content/schema/portfolio";
-import SceneFrame from "@/components/layout/SceneFrame";
-import ProjectCaseStudy from "@/components/projects/ProjectCaseStudy";
-
-interface ProjectsSceneProps {
-  portfolio: PortfolioData;
+interface ProjectLink {
+  label: string;
+  url: string;
 }
 
-type ProjectItem = {
+interface Project {
   name: string;
   description: string;
   metadata: {
@@ -19,62 +16,70 @@ type ProjectItem = {
     secondary: string;
   };
   details: string[];
-  links: {
-    label: string;
-    url: string;
-  }[];
-};
-
-function isProjectItem(item: unknown): item is ProjectItem {
-  if (typeof item !== "object" || item === null) {
-    return false;
-  }
-
-  const candidate = item as Partial<ProjectItem>;
-
-  return (
-    typeof candidate.name === "string" &&
-    typeof candidate.description === "string" &&
-    typeof candidate.metadata === "object" &&
-    candidate.metadata !== null &&
-    Array.isArray(candidate.details) &&
-    Array.isArray(candidate.links)
-  );
+  links: ProjectLink[];
 }
 
-export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
-  const sceneRef = useRef<HTMLDivElement>(null);
+interface ProjectCaseStudyProps {
+  project: Project;
+  index: number;
+  scrollY: number;
+  onClose: () => void;
+}
 
-  const [selectedProject, setSelectedProject] = useState<{
-    project: ProjectItem;
-    index: number;
-  } | null>(null);
-
-  const returnScrollY = useRef(0);
-
-  const projectSections = portfolio.sections.filter(
-    (section) => section.kind === "projects",
-  );
-
-  const projects = projectSections.flatMap((section) =>
-    section.items.filter(isProjectItem),
-  );
-
-  function openProject(project: ProjectItem, index: number) {
-    returnScrollY.current = window.scrollY;
-
-    setSelectedProject({
-      project,
-      index,
-    });
-  }
-
-  function closeProject() {
-    setSelectedProject(null);
-  }
+export default function ProjectCaseStudy({
+  project,
+  index,
+  scrollY,
+  onClose,
+}: ProjectCaseStudyProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const root = sceneRef.current;
+    const body = document.body;
+
+    const previousPosition = body.style.position;
+    const previousTop = body.style.top;
+    const previousWidth = body.style.width;
+    const previousOverflow = body.style.overflow;
+
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    const focusTimer = window.setTimeout(() => {
+      closeButtonRef.current?.focus();
+    }, 50);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", handleKeyDown);
+
+      body.style.position = previousPosition;
+      body.style.top = previousTop;
+      body.style.width = previousWidth;
+      body.style.overflow = previousOverflow;
+
+      window.scrollTo({
+        top: scrollY,
+        left: 0,
+        behavior: "instant",
+      });
+    };
+  }, [onClose, scrollY]);
+
+  useEffect(() => {
+    const root = rootRef.current;
 
     if (!root) {
       return;
@@ -89,82 +94,135 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
     }
 
     const context = gsap.context(() => {
-      const trigger = {
-        trigger: root,
-        start: "top 72%",
-        once: true,
-      };
-
-      gsap.fromTo(
-        "[data-project-header]",
-        {
-          opacity: 0,
-          x: -45,
-        },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.8,
+      const timeline = gsap.timeline({
+        defaults: {
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
-      );
+      });
 
-      gsap.fromTo(
-        "[data-project-stat]",
-        {
-          opacity: 0,
-          y: 25,
-          scale: 0.94,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.65,
-          stagger: 0.1,
-          delay: 0.2,
-          ease: "power3.out",
-          scrollTrigger: trigger,
-        },
-      );
-
-      gsap.fromTo(
-        "[data-project-card]",
-        {
-          opacity: 0,
-          y: 55,
-          scale: 0.94,
-          rotateX: 4,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          rotateX: 0,
-          duration: 0.75,
-          stagger: 0.1,
-          delay: 0.35,
-          ease: "power3.out",
-          scrollTrigger: trigger,
-        },
-      );
-
-      gsap.fromTo(
-        "[data-project-footer]",
-        {
-          opacity: 0,
-          y: 20,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          delay: 0.9,
-          ease: "power2.out",
-          scrollTrigger: trigger,
-        },
-      );
+      timeline
+        .fromTo(
+          "[data-case-topbar]",
+          {
+            opacity: 0,
+            y: -20,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+          },
+        )
+        .fromTo(
+          "[data-case-label]",
+          {
+            opacity: 0,
+            x: -25,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.55,
+          },
+          "-=0.25",
+        )
+        .fromTo(
+          "[data-case-title]",
+          {
+            opacity: 0,
+            y: 70,
+            scale: 0.94,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+          },
+          "-=0.2",
+        )
+        .fromTo(
+          "[data-case-description]",
+          {
+            opacity: 0,
+            x: -30,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.6,
+          },
+          "-=0.45",
+        )
+        .fromTo(
+          "[data-case-meta]",
+          {
+            opacity: 0,
+            y: 18,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.1,
+          },
+          "-=0.25",
+        )
+        .fromTo(
+          "[data-case-visual]",
+          {
+            opacity: 0,
+            x: 55,
+            scale: 0.92,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.8,
+          },
+          "-=0.65",
+        )
+        .fromTo(
+          "[data-case-log]",
+          {
+            opacity: 0,
+            y: 30,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.65,
+          },
+          "-=0.2",
+        )
+        .fromTo(
+          "[data-case-detail]",
+          {
+            opacity: 0,
+            x: 30,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.5,
+            stagger: 0.08,
+          },
+          "-=0.35",
+        )
+        .fromTo(
+          "[data-case-links]",
+          {
+            opacity: 0,
+            y: 25,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.55,
+          },
+          "-=0.15",
+        );
     }, root);
 
     return () => {
@@ -173,235 +231,257 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
   }, []);
 
   return (
-    <>
-      <SceneFrame
-        id="projects"
-        number="04"
-        label="PROJECT VAULT"
-        className="min-h-screen"
-      >
-        <div ref={sceneRef}>
-          <section className="relative min-h-screen overflow-hidden py-24 md:py-32">
-            {/* Technical background */}
-            <div className="pointer-events-none absolute inset-0">
-              <div className="absolute left-[8%] top-[14%] h-px w-[38%] bg-[var(--color-cyan)]/10" />
+    <div
+      ref={rootRef}
+      data-native-scroll
+      className="fixed inset-0 z-[100] h-[100dvh] overflow-y-auto overscroll-contain bg-[var(--color-void)]/98 backdrop-blur-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="project-case-study-title"
+    >
+      {/* Global atmosphere */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[8%] top-[18%] h-px w-[45%] bg-[var(--color-cyan)]/20" />
 
-              <div className="absolute right-[8%] top-[26%] h-px w-[24%] bg-[var(--color-red)]/10" />
+        <div className="absolute right-[5%] top-[34%] h-px w-[30%] bg-[var(--color-red)]/20" />
 
-              <div className="absolute bottom-[20%] left-[15%] h-px w-[22%] bg-[var(--color-red)]/10" />
+        <div className="absolute bottom-[20%] left-[20%] h-px w-[25%] bg-[var(--color-red)]/10" />
 
-              <div className="absolute bottom-[12%] right-[14%] h-32 w-32 border border-[var(--color-cyan)]/10" />
+        <div className="absolute bottom-[15%] right-[12%] h-48 w-48 border border-[var(--color-cyan)]/10" />
 
-              <div className="absolute bottom-[15%] right-[17%] h-20 w-20 border border-[var(--color-red)]/10" />
+        <div className="absolute bottom-[18%] right-[15%] h-32 w-32 border border-[var(--color-red)]/10" />
 
-              <div className="absolute left-[50%] top-[18%] h-[55%] w-px bg-gradient-to-b from-transparent via-[var(--color-cyan)]/10 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(0,229,255,0.07),transparent_35%),radial-gradient(circle_at_25%_70%,rgba(255,33,71,0.06),transparent_35%)]" />
+
+        <div className="absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:80px_80px]" />
+      </div>
+
+      {/* Scrollable content */}
+      <div className="relative min-h-full">
+        <div className="mx-auto min-h-screen max-w-[1500px] px-6 py-24 md:px-10 md:py-28">
+          {/* Top bar */}
+          <div
+            data-case-topbar
+            className="mb-14 flex items-center justify-between border-b border-[var(--color-white)]/10 pb-5"
+          >
+            <div className="flex items-center gap-4">
+              <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+                CASE STUDY
+              </span>
+
+              <span className="h-px w-8 bg-[var(--color-red)]" />
+
+              <span className="portfolio-mono text-[8px] text-[var(--color-dim)]">
+                ARTIFACT {String(index + 1).padStart(2, "0")}
+              </span>
             </div>
 
-            <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
-              {/* Header */}
-              <div
-                data-project-header
-                className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20"
+            <button
+              ref={closeButtonRef}
+              type="button"
+              onClick={onClose}
+              className="portfolio-mono flex items-center gap-3 border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all hover:border-[var(--color-red)]/50 hover:text-[var(--color-red)] focus:border-[var(--color-cyan)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-cyan)]/40"
+              aria-label="Close project case study"
+            >
+              CLOSE
+              <span className="text-sm">×</span>
+            </button>
+          </div>
+
+          {/* Main identity */}
+          <div className="grid gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
+            <div>
+              <p
+                data-case-label
+                className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-red)]"
               >
-                <div>
-                  <p className="portfolio-mono mb-7 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
-                    04 / PROJECT ARCHIVE
-                  </p>
+                PROJECT RECORD / VERIFIED
+              </p>
 
-                  <h2 className="portfolio-display text-[clamp(4rem,8vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.06em]">
-                    THINGS
-                    <br />
-                    I&apos;VE
-                    <br />
-                    <span className="text-[var(--color-red)]">BUILT.</span>
-                  </h2>
+              <h1
+                id="project-case-study-title"
+                data-case-title
+                className="portfolio-display mt-7 max-w-5xl text-[clamp(3.5rem,8vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.06em] text-[var(--color-white)]"
+              >
+                {project.name}
+              </h1>
 
-                  <p className="mt-10 max-w-md border-l border-[var(--color-cyan)]/30 pl-6 text-sm leading-7 text-[var(--color-muted)] md:text-base">
-                    Systems, experiments and products engineered from ideas into
-                    working software.
-                  </p>
-
-                  <div className="mt-10 flex items-center gap-5">
-                    <div data-project-stat>
-                      <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                        ARTIFACTS
-                      </p>
-
-                      <p className="portfolio-mono mt-2 text-2xl text-[var(--color-white)]">
-                        {String(projects.length).padStart(2, "0")}
-                      </p>
-                    </div>
-
-                    <div className="h-10 w-px bg-[var(--color-white)]/10" />
-
-                    <div data-project-stat>
-                      <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                        VAULT STATUS
-                      </p>
-
-                      <p className="portfolio-mono mt-2 text-[9px] text-[var(--color-cyan)]">
-                        {projects.length > 0 ? "ONLINE" : "EMPTY"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="portfolio-mono mt-12 text-[8px] tracking-[0.14em] text-[var(--color-dim)]">
-                    SELECT AN ARTIFACT TO INSPECT
-                  </p>
-                </div>
-
-                {/* Project grid */}
-                <div>
-                  {projects.length === 0 ? (
-                    <div className="flex min-h-[400px] items-center justify-center border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/30 p-8">
-                      <div className="text-center">
-                        <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
-                          PROJECT ARCHIVE EMPTY
-                        </p>
-
-                        <p className="mt-3 text-sm text-[var(--color-muted)]">
-                          No project records detected in the active resume.
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      className="grid gap-4 sm:grid-cols-2"
-                      style={{ perspective: "1200px" }}
-                    >
-                      {projects.map((project, index) => (
-                        <article
-                          key={`${project.name}-${index}`}
-                          data-project-card
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => openProject(project, index)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              openProject(project, index);
-                            }
-                          }}
-                          className="group relative flex min-h-[380px] cursor-pointer flex-col overflow-hidden border border-[var(--color-white)]/10 bg-[var(--color-panel)]/40 p-6 outline-none backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-[var(--color-cyan)]/40 hover:bg-[var(--color-panel)]/70 focus:-translate-y-2 focus:border-[var(--color-cyan)]/60 focus:ring-1 focus:ring-[var(--color-cyan)]/40 md:p-7"
-                          aria-label={`Inspect ${project.name}`}
-                        >
-                          {/* Corner geometry */}
-                          <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 border-b border-l border-[var(--color-cyan)]/10 transition-colors duration-500 group-hover:border-[var(--color-cyan)]/40" />
-
-                          <div className="pointer-events-none absolute bottom-0 left-0 h-12 w-12 border-r border-t border-[var(--color-red)]/10 transition-colors duration-500 group-hover:border-[var(--color-red)]/40" />
-
-                          {/* Scan line */}
-                          <div className="pointer-events-none absolute left-0 top-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-700 group-hover:w-full" />
-
-                          {/* Vertical scan */}
-                          <div className="pointer-events-none absolute bottom-0 right-0 h-0 w-px bg-[var(--color-red)] transition-all duration-700 group-hover:h-full" />
-
-                          {/* Index */}
-                          <div className="flex items-center justify-between">
-                            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                              ARTIFACT {String(index + 1).padStart(2, "0")}
-                            </span>
-
-                            <span className="h-1.5 w-1.5 bg-[var(--color-cyan)] opacity-40 transition-all duration-300 group-hover:opacity-100 group-hover:shadow-[0_0_12px_var(--color-cyan)]" />
-                          </div>
-
-                          {/* Accent */}
-                          <div className="mt-7 h-1 w-10 bg-[var(--color-red)] transition-all duration-500 group-hover:w-20 group-hover:bg-[var(--color-cyan)]" />
-
-                          {/* Project name */}
-                          <h3 className="portfolio-display mt-6 max-w-[90%] text-2xl font-bold uppercase leading-[0.95] tracking-[-0.03em] text-[var(--color-white)] transition-colors duration-300 group-hover:text-[var(--color-cyan)] md:text-3xl">
-                            {project.name}
-                          </h3>
-
-                          {/* Description */}
-                          <p className="mt-5 text-xs leading-6 text-[var(--color-muted)] md:text-sm">
-                            {project.description}
-                          </p>
-
-                          {/* Metadata */}
-                          <div className="mt-5 flex flex-wrap gap-2">
-                            {project.metadata.primary && (
-                              <span className="portfolio-mono border border-[var(--color-cyan)]/20 px-2.5 py-1.5 text-[7px] tracking-[0.1em] text-[var(--color-cyan)]">
-                                {project.metadata.primary}
-                              </span>
-                            )}
-
-                            {project.metadata.secondary && (
-                              <span className="portfolio-mono border border-[var(--color-white)]/10 px-2.5 py-1.5 text-[7px] tracking-[0.1em] text-[var(--color-dim)]">
-                                {project.metadata.secondary}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Details preview */}
-                          {project.details.length > 0 && (
-                            <div className="mt-5 border-t border-[var(--color-white)]/5 pt-4">
-                              <ul className="space-y-2">
-                                {project.details
-                                  .slice(0, 2)
-                                  .map((detail, detailIndex) => (
-                                    <li
-                                      key={`${detail}-${detailIndex}`}
-                                      className="flex gap-2 text-[10px] leading-5 text-[var(--color-muted)]"
-                                    >
-                                      <span className="mt-2 h-1 w-1 shrink-0 bg-[var(--color-red)]" />
-
-                                      <span>{detail}</span>
-                                    </li>
-                                  ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Action */}
-                          <div className="mt-auto flex items-end justify-between pt-7">
-                            <span className="portfolio-mono border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all group-hover:border-[var(--color-cyan)]/50 group-hover:text-[var(--color-cyan)]">
-                              INSPECT
-                              <span className="ml-3 inline-block transition-transform duration-300 group-hover:translate-x-1">
-                                →
-                              </span>
-                            </span>
-
-                            <span className="portfolio-mono text-[7px] text-[var(--color-dim)] transition-colors group-hover:text-[var(--color-cyan)]">
-                              ENTER
-                            </span>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              <div
+                data-case-description
+                className="mt-10 max-w-3xl border-l border-[var(--color-cyan)]/40 pl-6"
+              >
+                <p className="text-base leading-8 text-[var(--color-muted)] md:text-lg">
+                  {project.description}
+                </p>
               </div>
 
-              {/* Footer */}
-              <div
-                data-project-footer
-                className="mt-20 flex flex-col gap-5 border-t border-[var(--color-white)]/10 pt-6 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                  DISCOVER → BUILD → ITERATE → DEPLOY
+              {/* Metadata */}
+              <div className="mt-10 flex flex-wrap gap-3">
+                {project.metadata.primary && (
+                  <span
+                    data-case-meta
+                    className="portfolio-mono border border-[var(--color-cyan)]/25 bg-[var(--color-cyan)]/[0.03] px-4 py-3 text-[8px] tracking-[0.12em] text-[var(--color-cyan)]"
+                  >
+                    {project.metadata.primary}
+                  </span>
+                )}
+
+                {project.metadata.secondary && (
+                  <span
+                    data-case-meta
+                    className="portfolio-mono border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.12em] text-[var(--color-muted)]"
+                  >
+                    {project.metadata.secondary}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Artifact visualizer */}
+            <div
+              data-case-visual
+              className="relative min-h-[340px] overflow-hidden border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/30"
+            >
+              <div className="absolute inset-5 border border-[var(--color-white)]/5" />
+
+              <div className="absolute left-7 top-7">
+                <span className="portfolio-mono text-[7px] tracking-[0.16em] text-[var(--color-dim)]">
+                  ARTIFACT VISUALIZER
                 </span>
+              </div>
 
-                <a
-                  href="#contact"
-                  className="portfolio-mono text-[9px] tracking-[0.14em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)]"
-                >
-                  START A CONVERSATION →
-                </a>
+              {/* Orbit */}
+              <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 animate-[spin_18s_linear_infinite] rounded-full border border-[var(--color-cyan)]/20">
+                <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_15px_var(--color-cyan)]" />
+              </div>
+
+              {/* Counter orbit */}
+              <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-[var(--color-red)]/20">
+                <div className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 translate-y-1/2 bg-[var(--color-red)] shadow-[0_0_15px_var(--color-red)]" />
+              </div>
+
+              {/* Core */}
+              <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 border border-[var(--color-cyan)]/30">
+                <div className="absolute inset-5 border border-[var(--color-red)]/30" />
+
+                <div className="absolute inset-10 border border-[var(--color-cyan)]/30" />
+
+                <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_25px_var(--color-cyan)]" />
+              </div>
+
+              {/* Crosshair */}
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-px -translate-x-1/2 bg-[var(--color-cyan)]/10" />
+
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-px w-72 -translate-x-1/2 bg-[var(--color-cyan)]/10" />
+
+              <span className="portfolio-mono absolute bottom-7 left-7 text-[7px] tracking-[0.16em] text-[var(--color-cyan)]">
+                SYSTEM / ONLINE
+              </span>
+
+              <span className="portfolio-mono absolute bottom-7 right-7 text-[7px] text-[var(--color-dim)]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+
+          {/* Implementation log */}
+          <div
+            data-case-log
+            className="mt-24 grid gap-10 lg:grid-cols-[0.35fr_1fr]"
+          >
+            <div>
+              <p className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+                IMPLEMENTATION LOG
+              </p>
+
+              <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--color-muted)]">
+                Engineering details extracted directly from the active portfolio
+                source.
+              </p>
+            </div>
+
+            <div className="border-t border-[var(--color-white)]/10">
+              {project.details.length > 0 ? (
+                <ul>
+                  {project.details.map((detail, detailIndex) => (
+                    <li
+                      key={`${detail}-${detailIndex}`}
+                      data-case-detail
+                      className="group flex gap-5 border-b border-[var(--color-white)]/10 py-6"
+                    >
+                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-red)]">
+                        {String(detailIndex + 1).padStart(2, "0")}
+                      </span>
+
+                      <span className="max-w-3xl text-sm leading-7 text-[var(--color-muted)] transition-colors group-hover:text-[var(--color-white)] md:text-base">
+                        {detail}
+                      </span>
+
+                      <span className="ml-auto mt-2 hidden h-1 w-1 shrink-0 bg-[var(--color-cyan)] opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="py-6">
+                  <span className="portfolio-mono text-[8px] text-[var(--color-dim)]">
+                    NO ADDITIONAL IMPLEMENTATION RECORDS
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Links */}
+          <div
+            data-case-links
+            className="mt-16 border-t border-[var(--color-white)]/10 pt-7"
+          >
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
+                EXTERNAL TRANSMISSIONS
+              </span>
+
+              <div className="flex flex-wrap gap-3">
+                {project.links.length > 0 ? (
+                  project.links.map((link, linkIndex) => (
+                    <a
+                      key={`${link.url}-${linkIndex}`}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="portfolio-mono inline-flex items-center gap-4 border border-[var(--color-cyan)]/20 px-5 py-3 text-[8px] tracking-[0.14em] text-[var(--color-cyan)] transition-all hover:border-[var(--color-cyan)]/60 hover:bg-[var(--color-cyan)]/[0.04] focus:border-[var(--color-cyan)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-cyan)]/30"
+                    >
+                      {link.label.toUpperCase()}
+                      <span>↗</span>
+                    </a>
+                  ))
+                ) : (
+                  <span className="portfolio-mono border border-[var(--color-white)]/10 px-5 py-3 text-[8px] text-[var(--color-dim)]">
+                    NO EXTERNAL LINKS
+                  </span>
+                )}
               </div>
             </div>
-          </section>
-        </div>
-      </SceneFrame>
+          </div>
 
-      {selectedProject && (
-        <ProjectCaseStudy
-          project={selectedProject.project}
-          index={selectedProject.index}
-          scrollY={returnScrollY.current}
-          onClose={closeProject}
-        />
-      )}
-    </>
+          {/* Footer */}
+          <div className="mt-16 flex items-center justify-between border-t border-[var(--color-white)]/10 pt-6">
+            <span className="portfolio-mono text-[7px] tracking-[0.16em] text-[var(--color-dim)]">
+              CASE RECORD / END
+            </span>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="portfolio-mono text-[8px] tracking-[0.14em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)] focus:outline-none"
+            >
+              RETURN TO ARCHIVE ↑
+            </button>
+          </div>
+
+          <div className="h-24" />
+        </div>
+      </div>
+    </div>
   );
 }

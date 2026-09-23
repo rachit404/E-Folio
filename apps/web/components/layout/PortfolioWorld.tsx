@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import type { PortfolioTheme } from "@/lib/theme";
 
@@ -13,6 +19,11 @@ import type { WorldId } from "@/components/world/WorldTypes";
 
 import { getWorldConfig } from "@/lib/worlds";
 
+import {
+  PortfolioWorldContext,
+  type PortfolioWorldContextValue,
+} from "@/components/world/context/PortfolioWorldContext";
+
 interface PortfolioWorldProps {
   theme: PortfolioTheme;
   children: ReactNode;
@@ -22,8 +33,8 @@ const worldOrder: WorldId[] = [
   "home",
   "about",
   "experience",
-  "skills",
   "projects",
+  "skills",
   "contact",
 ];
 
@@ -32,6 +43,13 @@ export default function PortfolioWorld({
   children,
 }: PortfolioWorldProps) {
   const [activeWorld, setActiveWorld] = useState<WorldId>("home");
+
+  const [forcedWorld, setForcedWorld] = useState<WorldId | null>(null);
+
+  const setWorld = useCallback((worldId: WorldId) => {
+    setForcedWorld(worldId);
+    setActiveWorld(worldId);
+  }, []);
 
   useEffect(() => {
     const elements = worldOrder
@@ -46,6 +64,10 @@ export default function PortfolioWorld({
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (forcedWorld) {
+          return;
+        }
+
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
@@ -65,33 +87,53 @@ export default function PortfolioWorld({
     elements.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
-  }, []);
+  }, [forcedWorld]);
+
+  /*
+   * Once the user explicitly enters an interaction-driven
+   * world such as Case Study, scrolling should not immediately
+   * overwrite that world state.
+   *
+   * Returning to a normal scroll world clears the forced state.
+   */
+  useEffect(() => {
+    if (forcedWorld && forcedWorld !== "case-study") {
+      setForcedWorld(null);
+    }
+  }, [forcedWorld]);
+
+  const contextValue = useMemo<PortfolioWorldContextValue>(
+    () => ({
+      activeWorld,
+      setWorld,
+    }),
+    [activeWorld, setWorld],
+  );
 
   const config = useMemo(() => getWorldConfig(activeWorld), [activeWorld]);
 
   return (
-    <div className="relative min-h-screen">
-      {/* Shared world viewport */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <WorldBackground
-          src={config.background}
-          opacity={config.atmosphere.opacity}
+    <PortfolioWorldContext.Provider value={contextValue}>
+      <div className="relative min-h-screen">
+        <div className="pointer-events-none fixed inset-0 z-0">
+          <WorldBackground
+            src={config.background}
+            opacity={config.atmosphere.opacity}
+          />
+
+          <WorldStage config={config} theme={theme} />
+
+          <WorldTransition worldId={activeWorld} />
+        </div>
+
+        <div className="relative z-10">{children}</div>
+
+        <PortfolioHUD
+          worldId={activeWorld}
+          number={config.number}
+          label={config.label}
         />
-
-        <WorldStage config={config} theme={theme} />
-
-        <WorldTransition worldId={activeWorld} />
       </div>
-
-      {/* Portfolio content */}
-      <div className="relative z-10">{children}</div>
-
-      {/* Persistent world HUD */}
-      <PortfolioHUD
-        worldId={activeWorld}
-        number={config.number}
-        label={config.label}
-      />
-    </div>
+    </PortfolioWorldContext.Provider>
   );
 }
