@@ -2,9 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
 import SceneFrame from "@/components/layout/SceneFrame";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface ExperienceSceneProps {
   portfolio: PortfolioData;
@@ -28,15 +31,9 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
   useEffect(() => {
     const root = sceneRef.current;
 
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (reducedMotion) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
@@ -47,7 +44,22 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
         once: true,
       };
 
-      gsap.fromTo(
+      const animate = (
+        selector: string,
+        from: gsap.TweenVars,
+        to: gsap.TweenVars,
+      ) => {
+        const elements = root.querySelectorAll(selector);
+
+        if (!elements.length) return;
+
+        gsap.fromTo(elements, from, {
+          ...to,
+          scrollTrigger: trigger,
+        });
+      };
+
+      animate(
         "[data-experience-header]",
         {
           opacity: 0,
@@ -58,11 +70,10 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           x: 0,
           duration: 0.75,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-experience-rail]",
         {
           scaleY: 0,
@@ -73,11 +84,10 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           duration: 1.4,
           delay: 0.2,
           ease: "power3.inOut",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-experience-entry]",
         {
           opacity: 0,
@@ -90,11 +100,10 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           stagger: 0.18,
           delay: 0.35,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-experience-node]",
         {
           opacity: 0,
@@ -107,11 +116,10 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           stagger: 0.18,
           delay: 0.45,
           ease: "back.out(1.7)",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-experience-detail]",
         {
           opacity: 0,
@@ -124,11 +132,10 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           stagger: 0.05,
           delay: 0.65,
           ease: "power2.out",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-position-entry]",
         {
           opacity: 0,
@@ -141,14 +148,11 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           stagger: 0.12,
           delay: 0.75,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
     }, root);
 
-    return () => {
-      context.revert();
-    };
+    return () => context.revert();
   }, []);
 
   return (

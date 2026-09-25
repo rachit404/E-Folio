@@ -2,9 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
 import SceneFrame from "@/components/layout/SceneFrame";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SkillsSceneProps {
   portfolio: PortfolioData;
@@ -59,11 +62,9 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
 
     if (!root) return;
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (reducedMotion) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
 
     const context = gsap.context(() => {
       const trigger = {
@@ -72,34 +73,57 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
         once: true,
       };
 
-      gsap.fromTo(
+      const animate = (
+        selector: string,
+        from: gsap.TweenVars,
+        to: gsap.TweenVars,
+      ) => {
+        const elements = root.querySelectorAll(selector);
+
+        if (!elements.length) return;
+
+        gsap.fromTo(elements, from, {
+          ...to,
+          scrollTrigger: trigger,
+        });
+      };
+
+      animate(
         "[data-skills-header]",
-        { opacity: 0, x: -40 },
+        {
+          opacity: 0,
+          x: -40,
+        },
         {
           opacity: 1,
           x: 0,
           duration: 0.8,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-skill-category]",
-        { opacity: 0, y: 30 },
+        {
+          opacity: 0,
+          y: 30,
+        },
         {
           opacity: 1,
           y: 0,
           duration: 0.65,
           stagger: 0.1,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
 
-      gsap.fromTo(
+      animate(
         "[data-skill-card]",
-        { opacity: 0, y: 25, scale: 0.96 },
+        {
+          opacity: 0,
+          y: 25,
+          scale: 0.96,
+        },
         {
           opacity: 1,
           y: 0,
@@ -107,7 +131,6 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
           duration: 0.55,
           stagger: 0.045,
           ease: "power3.out",
-          scrollTrigger: trigger,
         },
       );
     }, root);
@@ -126,7 +149,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
         <section className="relative overflow-hidden py-20 md:py-28">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute left-[8%] top-[15%] h-32 w-32 rounded-full border border-[var(--color-cyan)]/10" />
-            <div className="absolute right-[10%] bottom-[15%] h-44 w-44 border border-[var(--color-red)]/[0.06]" />
+            <div className="absolute bottom-[15%] right-[10%] h-44 w-44 border border-[var(--color-red)]/[0.06]" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
@@ -236,8 +259,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
 
                               <div className="flex items-center justify-between">
                                 <span className="portfolio-mono text-[7px] text-[var(--color-dim)]">
-                                  MOD.
-                                  {String(skill.index + 1).padStart(2, "0")}
+                                  MOD.{String(skill.index + 1).padStart(2, "0")}
                                 </span>
 
                                 <span

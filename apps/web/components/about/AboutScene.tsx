@@ -2,9 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
 import SceneFrame from "@/components/layout/SceneFrame";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface AboutSceneProps {
   portfolio: PortfolioData;
@@ -23,22 +26,27 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
     }
 
     const context = gsap.context(() => {
-      const trigger = {
-        trigger: root,
-        start: "top 72%",
-        once: true,
-      };
+      const elements = root.querySelectorAll("[data-about-element]");
+
+      if (!elements.length) return;
 
       gsap.fromTo(
-        "[data-about-element]",
-        { opacity: 0, y: 30 },
+        elements,
+        {
+          opacity: 0,
+          y: 30,
+        },
         {
           opacity: 1,
           y: 0,
           duration: 0.7,
           stagger: 0.08,
           ease: "power3.out",
-          scrollTrigger: trigger,
+          scrollTrigger: {
+            trigger: root,
+            start: "top 72%",
+            once: true,
+          },
         },
       );
     }, root);
