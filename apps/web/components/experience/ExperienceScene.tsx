@@ -161,7 +161,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
       <div ref={sceneRef}>
         <section className="relative overflow-hidden py-24 md:py-32">
           <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
-            {/* Header */}
             <div
               data-experience-header
               className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end"
@@ -186,10 +185,8 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               </div>
             </div>
 
-            {/* Timeline */}
             {timelineEntries.length > 0 && (
               <div className="relative">
-                {/* Rail */}
                 <div
                   data-experience-rail
                   className="absolute bottom-0 left-[11px] top-0 w-px bg-gradient-to-b from-[var(--color-cyan)] via-[var(--color-cyan)]/30 to-transparent md:left-[15px]"
@@ -215,7 +212,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
                           data-experience-entry
                           className="relative pl-10 md:pl-16"
                         >
-                          {/* Node */}
                           <div
                             data-experience-node
                             className="absolute left-[5px] top-2 flex h-3 w-3 items-center justify-center rounded-full border border-[var(--color-cyan)] bg-[var(--color-void)] md:left-[9px]"
@@ -223,7 +219,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
                             <span className="h-1 w-1 rounded-full bg-[var(--color-cyan)]" />
                           </div>
 
-                          {/* Entry */}
                           <div className="group relative overflow-hidden border border-white/10 bg-[var(--color-panel)]/30 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-cyan)]/30 hover:bg-[var(--color-panel)]/50 md:p-8">
                             <div className="pointer-events-none absolute right-0 top-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-500 group-hover:w-full" />
 
@@ -299,7 +294,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               </div>
             )}
 
-            {/* Positions */}
             {positionEntries.length > 0 && (
               <div className="mt-24">
                 <div className="mb-8 flex items-center gap-4">
@@ -356,7 +350,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               </div>
             )}
 
-            {/* Empty state */}
             {timelineEntries.length === 0 && positionEntries.length === 0 && (
               <div className="border border-dashed border-white/10 p-10 text-center">
                 <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
@@ -365,7 +358,6 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               </div>
             )}
 
-            {/* Footer */}
             <div className="mt-20 flex items-center justify-between border-t border-white/10 pt-6">
               <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
                 END OF RECORD
