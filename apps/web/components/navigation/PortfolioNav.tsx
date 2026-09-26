@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 
 interface PortfolioNavProps {
   profiles: string[];
@@ -44,7 +49,7 @@ const navigation = [
     id: "contact",
     number: "06",
   },
-];
+] as const;
 
 function formatRole(role: string) {
   return role.replace(/[-_]+/g, " ").toUpperCase();
@@ -57,6 +62,8 @@ export default function PortfolioNav({
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  const scrollFrame = useRef<number | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -91,38 +98,38 @@ export default function PortfolioNav({
   }, [open]);
 
   useEffect(() => {
-    const sections = navigation
-      .map((item) => document.getElementById(item.id))
-      .filter((section): section is HTMLElement => Boolean(section));
+    const updateNavigationState = () => {
+      scrollFrame.current = null;
 
-    if (!sections.length) return;
+      const viewportAnchor = window.innerHeight * 0.42;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      let closestId = "home";
+      let closestDistance = Number.POSITIVE_INFINITY;
 
-        if (visible[0]) {
-          setActiveSection(visible[0].target.id);
+      for (const item of navigation) {
+        const section = document.getElementById(item.id);
+
+        if (!section) continue;
+
+        const rect = section.getBoundingClientRect();
+
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
+          continue;
         }
-      },
-      {
-        rootMargin: "-20% 0px -55% 0px",
-        threshold: [0.05, 0.15, 0.3, 0.5],
-      },
-    );
 
-    sections.forEach((section) => observer.observe(section));
+        const center = rect.top + rect.height / 2;
 
-    return () => observer.disconnect();
-  }, []);
+        const distance = Math.abs(center - viewportAnchor);
 
-  useEffect(() => {
-    let frame = 0;
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestId = item.id;
+        }
+      }
 
-    const update = () => {
-      frame = 0;
+      setActiveSection((current) =>
+        current === closestId ? current : closestId,
+      );
 
       const scrollable =
         document.documentElement.scrollHeight - window.innerHeight;
@@ -135,26 +142,30 @@ export default function PortfolioNav({
       setScrollProgress(progress);
     };
 
-    const onScroll = () => {
-      if (!frame) {
-        frame = requestAnimationFrame(update);
+    const requestUpdate = () => {
+      if (scrollFrame.current !== null) {
+        return;
       }
+
+      scrollFrame.current = window.requestAnimationFrame(updateNavigationState);
     };
 
-    update();
+    requestUpdate();
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", requestUpdate, { passive: true });
 
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", requestUpdate);
 
     return () => {
-      if (frame) {
-        cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+
+      window.removeEventListener("resize", requestUpdate);
+
+      if (scrollFrame.current !== null) {
+        window.cancelAnimationFrame(scrollFrame.current);
+
+        scrollFrame.current = null;
       }
-
-      window.removeEventListener("scroll", onScroll);
-
-      window.removeEventListener("resize", update);
     };
   }, []);
 
@@ -170,7 +181,7 @@ export default function PortfolioNav({
 
     if (!target) return;
 
-    const offset = 12;
+    const offset = 8;
 
     const position =
       target.getBoundingClientRect().top + window.scrollY - offset;
@@ -191,7 +202,7 @@ export default function PortfolioNav({
     <>
       <div className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-px bg-white/[0.04]">
         <div
-          className="h-full origin-left bg-gradient-to-r from-[var(--color-cyan)] via-[var(--color-cyan)] to-[var(--color-red)]"
+          className="h-full origin-left bg-gradient-to-r from-[var(--color-cyan)] via-[var(--color-cyan)] to-[var(--color-red)] transition-transform duration-150"
           style={{
             transform: `scaleX(${scrollProgress})`,
           }}
@@ -249,7 +260,7 @@ export default function PortfolioNav({
                     {item.label}
 
                     <span
-                      className={`absolute -bottom-2 left-0 h-px bg-[var(--color-cyan)] transition-all ${
+                      className={`absolute -bottom-2 left-0 h-px bg-[var(--color-cyan)] transition-all duration-300 ${
                         active ? "w-full" : "w-0 group-hover:w-full"
                       }`}
                     />
@@ -286,7 +297,7 @@ export default function PortfolioNav({
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-white md:hidden"
+            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-white transition-colors hover:border-[var(--color-cyan)]/40 md:hidden"
             aria-label={open ? "Close navigation" : "Open navigation"}
             aria-expanded={open}
           >
@@ -296,7 +307,7 @@ export default function PortfolioNav({
       </header>
 
       <div
-        className={`fixed inset-0 z-40 bg-[var(--color-void)]/98 backdrop-blur-xl transition-opacity md:hidden ${
+        className={`fixed inset-0 z-40 bg-[var(--color-void)]/98 backdrop-blur-xl transition-opacity duration-500 md:hidden ${
           open
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"

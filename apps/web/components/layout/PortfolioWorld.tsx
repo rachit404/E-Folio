@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -38,68 +39,127 @@ const worldOrder: WorldId[] = [
   "contact",
 ];
 
+const worldSet = new Set<WorldId>(worldOrder);
+
 export default function PortfolioWorld({
   theme,
   children,
 }: PortfolioWorldProps) {
   const [activeWorld, setActiveWorld] = useState<WorldId>("home");
-
   const [forcedWorld, setForcedWorld] = useState<WorldId | null>(null);
 
+  const forcedWorldRef = useRef<WorldId | null>(null);
+  const rafRef = useRef<number | null>(null);
+
   const setWorld = useCallback((worldId: WorldId) => {
-    setForcedWorld(worldId);
     setActiveWorld(worldId);
-  }, []);
 
-  useEffect(() => {
-    const elements = worldOrder
-      .map((worldId) => document.getElementById(worldId))
-      .filter(
-        (element): element is HTMLElement => element instanceof HTMLElement,
-      );
-
-    if (!elements.length) {
+    if (worldId === "case-study") {
+      forcedWorldRef.current = worldId;
+      setForcedWorld(worldId);
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (forcedWorld) {
-          return;
-        }
+    forcedWorldRef.current = null;
+    setForcedWorld(null);
+  }, []);
 
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        const next = visible[0]?.target.id as WorldId | undefined;
-
-        if (next && worldOrder.includes(next)) {
-          setActiveWorld(next);
-        }
-      },
-      {
-        rootMargin: "-20% 0px -45% 0px",
-        threshold: [0.05, 0.15, 0.3, 0.5],
-      },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, [forcedWorld]);
-
-  /*
-   * Once the user explicitly enters an interaction-driven
-   * world such as Case Study, scrolling should not immediately
-   * overwrite that world state.
-   *
-   * Returning to a normal scroll world clears the forced state.
-   */
   useEffect(() => {
-    if (forcedWorld && forcedWorld !== "case-study") {
+    const updateActiveWorld = () => {
+      rafRef.current = null;
+
+      if (forcedWorldRef.current) {
+        return;
+      }
+
+      const viewportCenter = window.innerHeight * 0.48;
+
+      let closestWorld: WorldId = "home";
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      for (const worldId of worldOrder) {
+        const element = document.getElementById(worldId);
+
+        if (!element) {
+          continue;
+        }
+
+        const rect = element.getBoundingClientRect();
+
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
+          continue;
+        }
+
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportCenter);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestWorld = worldId;
+        }
+      }
+
+      setActiveWorld((current) =>
+        current === closestWorld ? current : closestWorld,
+      );
+    };
+
+    const requestUpdate = () => {
+      if (rafRef.current !== null) {
+        return;
+      }
+
+      rafRef.current = window.requestAnimationFrame(updateActiveWorld);
+    };
+
+    requestUpdate();
+
+    window.addEventListener("scroll", requestUpdate, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!forcedWorld) {
+      return;
+    }
+
+    if (forcedWorld !== "case-study") {
+      forcedWorldRef.current = null;
       setForcedWorld(null);
     }
+  }, [forcedWorld]);
+
+  useEffect(() => {
+    if (!forcedWorld) {
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        forcedWorldRef.current = null;
+        setForcedWorld(null);
+        setActiveWorld("projects");
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
   }, [forcedWorld]);
 
   const contextValue = useMemo<PortfolioWorldContextValue>(
@@ -132,6 +192,7 @@ export default function PortfolioWorld({
           worldId={activeWorld}
           number={config.number}
           label={config.label}
+          forced={Boolean(forcedWorld)}
         />
       </div>
     </PortfolioWorldContext.Provider>

@@ -18,20 +18,34 @@ export default function WorldCamera({ config }: WorldCameraProps) {
     [config.camera.position],
   );
 
-  const target = useMemo(() => new THREE.Vector3(), []);
+  const targetPosition = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame(() => {
+  const lookTarget = useMemo(() => new THREE.Vector3(0, 0, 0), []);
+
+  useFrame((_, delta) => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
 
     const targetX = basePosition.x + pointer.x * config.camera.parallax;
 
     const targetY = basePosition.y + pointer.y * config.camera.parallax * 0.6;
 
-    target.set(targetX, targetY, basePosition.z);
+    targetPosition.set(targetX, targetY, basePosition.z);
 
-    perspectiveCamera.position.lerp(target, 0.035);
+    const positionEase = 1 - Math.exp(-5.5 * delta);
 
-    perspectiveCamera.lookAt(0, 0, 0);
+    const projectionEase = 1 - Math.exp(-4.5 * delta);
+
+    perspectiveCamera.position.lerp(targetPosition, positionEase);
+
+    perspectiveCamera.fov = THREE.MathUtils.lerp(
+      perspectiveCamera.fov,
+      config.camera.fov,
+      projectionEase,
+    );
+
+    perspectiveCamera.lookAt(lookTarget);
+
+    perspectiveCamera.updateProjectionMatrix();
   });
 
   return null;
