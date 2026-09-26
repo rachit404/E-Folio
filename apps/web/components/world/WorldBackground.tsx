@@ -16,23 +16,26 @@ export default function WorldBackground({
   opacity = 0.9,
 }: WorldBackgroundProps) {
   const [layers, setLayers] = useState<[BackgroundLayer, BackgroundLayer]>(
-    () => [
-      {
-        src,
-      },
-      {
-        src,
-      },
-    ],
+    () => [{ src }, { src }],
   );
 
   const [activeLayer, setActiveLayer] = useState(0);
 
   const activeLayerRef = useRef(0);
+
   const frameRef = useRef<number | null>(null);
 
+  const previousSrcRef = useRef(src);
+
   useEffect(() => {
+    if (previousSrcRef.current === src) {
+      return;
+    }
+
+    previousSrcRef.current = src;
+
     const currentLayer = activeLayerRef.current;
+
     const nextLayer = currentLayer === 0 ? 1 : 0;
 
     setLayers((current) => {
@@ -51,12 +54,14 @@ export default function WorldBackground({
 
     frameRef.current = window.requestAnimationFrame(() => {
       activeLayerRef.current = nextLayer;
+
       setActiveLayer(nextLayer);
     });
 
     return () => {
       if (frameRef.current !== null) {
         window.cancelAnimationFrame(frameRef.current);
+
         frameRef.current = null;
       }
     };
@@ -70,26 +75,32 @@ export default function WorldBackground({
       {layers.map((layer, index) => (
         <div
           key={index}
-          className="absolute inset-0 transition-opacity duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="absolute inset-[-2%] transition-[opacity,transform] duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
             backgroundImage: `url("${layer.src}")`,
             backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             opacity: index === activeLayer ? opacity : 0,
-            transform: "scale(1.025)",
-            willChange: "opacity",
+            transform: index === activeLayer ? "scale(1)" : "scale(1.04)",
+            willChange: "opacity, transform",
           }}
         />
       ))}
 
       <div className="absolute inset-0 bg-[var(--color-void)]/10" />
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_32%,var(--color-void)/75%_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_28%,var(--color-void)/78%_100%)]" />
 
       <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:80px_80px]" />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-void)]/20 via-transparent to-[var(--color-void)]/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-void)]/15 via-transparent to-[var(--color-void)]/40" />
+
+      <div className="absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(0deg,transparent,transparent_3px,rgba(255,255,255,0.025)_4px)]" />
+
+      <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-cyan)]/25 to-transparent" />
+
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-red)]/20 to-transparent" />
     </div>
   );
 }

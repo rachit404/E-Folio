@@ -20,7 +20,7 @@ export default function PortfolioHUD({
       <div className="mx-auto flex max-w-[1600px] items-end justify-between px-6 pb-5 md:px-10 md:pb-7">
         <div
           key={`${worldId}-meta`}
-          className="portfolio-mono flex items-center gap-3 text-[8px] tracking-[0.16em] text-[var(--color-dim)]"
+          className="portfolio-mono flex items-center gap-3 text-[8px] tracking-[0.16em] text-[var(--color-dim)] transition-all duration-700"
         >
           <span className="text-[var(--color-cyan)]">{number}</span>
 
@@ -39,9 +39,15 @@ export default function PortfolioHUD({
 
         <div
           key={`${worldId}-world`}
-          className="portfolio-mono text-[7px] tracking-[0.18em] text-[var(--color-dim)]"
+          className="portfolio-mono flex items-center gap-3 text-[7px] tracking-[0.18em] text-[var(--color-dim)] transition-all duration-700"
         >
-          WORLD / {worldId.toUpperCase()}
+          <span className="hidden sm:inline">WORLD</span>
+
+          <span className="h-px w-5 bg-white/10" />
+
+          <span className="text-[var(--color-cyan)]">
+            {worldId.toUpperCase()}
+          </span>
         </div>
       </div>
     </div>

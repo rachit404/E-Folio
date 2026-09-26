@@ -20,22 +20,36 @@ export default function WorldCamera({ config }: WorldCameraProps) {
 
   const targetPosition = useMemo(() => new THREE.Vector3(), []);
 
-  const lookTarget = useMemo(() => new THREE.Vector3(0, 0, 0), []);
+  const lookTarget = useMemo(() => new THREE.Vector3(), []);
+
+  const targetLook = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((_, delta) => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
 
-    const targetX = basePosition.x + pointer.x * config.camera.parallax;
+    const pointerX = THREE.MathUtils.clamp(pointer.x, -1, 1);
 
-    const targetY = basePosition.y + pointer.y * config.camera.parallax * 0.6;
+    const pointerY = THREE.MathUtils.clamp(pointer.y, -1, 1);
 
-    targetPosition.set(targetX, targetY, basePosition.z);
+    const parallax = config.camera.parallax;
 
-    const positionEase = 1 - Math.exp(-5.5 * delta);
+    targetPosition.set(
+      basePosition.x + pointerX * parallax,
+      basePosition.y + pointerY * parallax * 0.6,
+      basePosition.z,
+    );
 
-    const projectionEase = 1 - Math.exp(-4.5 * delta);
+    targetLook.set(pointerX * parallax * 0.18, pointerY * parallax * 0.12, 0);
+
+    const positionEase = 1 - Math.exp(-4.8 * delta);
+
+    const lookEase = 1 - Math.exp(-3.8 * delta);
+
+    const projectionEase = 1 - Math.exp(-3.5 * delta);
 
     perspectiveCamera.position.lerp(targetPosition, positionEase);
+
+    lookTarget.lerp(targetLook, lookEase);
 
     perspectiveCamera.fov = THREE.MathUtils.lerp(
       perspectiveCamera.fov,
