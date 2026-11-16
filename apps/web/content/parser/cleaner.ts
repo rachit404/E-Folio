@@ -23,20 +23,6 @@ export function stripComments(text: string): string {
     .join("\n");
 }
 
-function isEscaped(text: string, index: number): boolean {
-  let slashCount = 0;
-
-  for (let cursor = index - 1; cursor >= 0; cursor--) {
-    if (text[cursor] !== "\\") {
-      break;
-    }
-
-    slashCount++;
-  }
-
-  return slashCount % 2 === 1;
-}
-
 function unwrapSimpleCommands(value: string): string {
   const commands = [
     "textbf",

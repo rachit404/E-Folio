@@ -19,6 +19,18 @@ interface RolePageProps {
   }>;
 }
 
+/**
+ * Prerender one page per resume at build time, so the personal
+ * .tex files are only needed during `next build`, not at runtime.
+ */
+export async function generateStaticParams() {
+  const profiles = await listProfiles();
+
+  return profiles.map((role) => ({ role }));
+}
+
+export const dynamicParams = false;
+
 export default async function RolePage({ params }: RolePageProps) {
   const { role } = await params;
 

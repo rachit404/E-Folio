@@ -5,7 +5,22 @@ import { PortfolioSchema, type PortfolioData } from "../schema/portfolio";
 
 import { parseDocument } from "../parser/parser";
 
-const resumeRoot = path.join(process.cwd(), "..", "..", "content", "resumes");
+/**
+ * Resume .tex files are personal data and are NOT stored in git.
+ *
+ * Default:  <repo>/content/resumes
+ * Override: PORTFOLIO_CONTENT_DIR=/path/to/dir/containing/.tex/files
+ *           (used by CI / Vercel builds that fetch the resumes).
+ */
+function getResumeRoot(): string {
+  const override = process.env.PORTFOLIO_CONTENT_DIR?.trim();
+
+  if (override) {
+    return path.resolve(override);
+  }
+
+  return path.join(process.cwd(), "..", "..", "content", "resumes");
+}
 
 function normalizeProfile(profile: string): string {
   return profile
@@ -21,14 +36,40 @@ function normalizeProfile(profile: string): string {
  * another available portfolio role.
  */
 export async function listProfiles(): Promise<string[]> {
-  const entries = await fs.readdir(resumeRoot, {
-    withFileTypes: true,
-  });
+  const resumeRoot = getResumeRoot();
 
-  return entries
+  let entries;
+
+  try {
+    /*
+     * Resumes intentionally live outside the app (gitignored), so
+     * Turbopack must not try to trace/bundle this directory.
+     */
+    entries = await fs.readdir(/* turbopackIgnore: true */ resumeRoot, {
+      withFileTypes: true,
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error(
+        `Resume directory not found: ${resumeRoot}. ` +
+          `Add .tex resumes there (they are gitignored) or set ` +
+          `PORTFOLIO_CONTENT_DIR to the directory that contains them.`,
+      );
+    }
+
+    throw error;
+  }
+
+  const profiles = entries
     .filter((entry) => entry.isFile() && /\.tex$/i.test(entry.name))
     .map((entry) => entry.name.replace(/\.tex$/i, "").toLowerCase())
     .sort();
+
+  if (!profiles.length) {
+    throw new Error(`No .tex resumes found in ${resumeRoot}.`);
+  }
+
+  return profiles;
 }
 
 /**
@@ -52,9 +93,12 @@ export async function loadPortfolio(profile = "sde"): Promise<PortfolioData> {
 
   const fileName = `${normalizedProfile}.tex`;
 
-  const filePath = path.join(resumeRoot, fileName);
+  const filePath = path.join(getResumeRoot(), fileName);
 
-  const source = await fs.readFile(filePath, "utf-8");
+  const source = await fs.readFile(
+    /* turbopackIgnore: true */ filePath,
+    "utf-8",
+  );
 
   /*
    * .tex → parser → structured portfolio
