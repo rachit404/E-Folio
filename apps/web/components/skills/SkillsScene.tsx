@@ -148,8 +148,8 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
       <div ref={sceneRef}>
         <section className="relative overflow-hidden py-20 md:py-28">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[8%] top-[15%] h-32 w-32 rounded-full border border-[var(--color-cyan)]/10" />
-            <div className="absolute bottom-[15%] right-[10%] h-44 w-44 border border-[var(--color-red)]/[0.06]" />
+            <div className="absolute left-[8%] top-[15%] h-32 w-32 rounded-full border border-[var(--color-primary)]/10" />
+            <div className="absolute bottom-[15%] right-[10%] h-44 w-44 border border-[var(--color-accent)]/[0.06]" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
@@ -158,14 +158,14 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
               className="mb-16 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
             >
               <div>
-                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
+                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
                   CAPABILITY MATRIX // 05
                 </p>
 
                 <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black uppercase leading-[0.82] tracking-[-0.06em]">
                   ENGINEERING
                   <br />
-                  <span className="text-[var(--color-red)]">ARSENAL</span>
+                  <span className="text-[var(--color-accent)]">ARSENAL</span>
                 </h2>
 
                 <p className="mt-8 max-w-xl text-sm leading-7 text-[var(--color-muted)] md:text-base">
@@ -190,7 +190,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                     GROUPS
                   </span>
 
-                  <span className="portfolio-display mt-2 block text-4xl font-bold text-[var(--color-cyan)]">
+                  <span className="portfolio-display mt-2 block text-4xl font-bold text-[var(--color-primary)]">
                     {String(sections.length).padStart(2, "0")}
                   </span>
                 </div>
@@ -216,11 +216,11 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                       data-skill-category
                     >
                       <div className="mb-6 flex items-center gap-4">
-                        <span className="portfolio-mono text-[8px] text-[var(--color-cyan)]">
+                        <span className="portfolio-mono text-[8px] text-[var(--color-primary)]">
                           {String(sectionIndex + 1).padStart(2, "0")}
                         </span>
 
-                        <span className="h-px w-10 bg-[var(--color-red)]" />
+                        <span className="h-px w-10 bg-[var(--color-accent)]" />
 
                         <h3 className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-muted)]">
                           {section.heading}
@@ -247,12 +247,12 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                               onBlur={() => setActiveSkill(null)}
                               className={`group relative min-h-[170px] overflow-hidden border p-5 text-left transition-all duration-300 ${
                                 active
-                                  ? "border-[var(--color-cyan)]/50 bg-[var(--color-panel)]/60"
-                                  : "border-white/10 bg-[var(--color-panel)]/25 hover:border-[var(--color-cyan)]/30"
+                                  ? "border-[var(--color-primary)]/50 bg-[var(--color-panel)]/60"
+                                  : "border-white/10 bg-[var(--color-panel)]/25 hover:border-[var(--color-primary)]/30"
                               }`}
                             >
                               <span
-                                className={`absolute left-0 top-0 h-px bg-[var(--color-cyan)] transition-all duration-500 ${
+                                className={`absolute left-0 top-0 h-px bg-[var(--color-primary)] transition-all duration-500 ${
                                   active ? "w-full" : "w-0 group-hover:w-full"
                                 }`}
                               />
@@ -265,7 +265,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                                 <span
                                   className={`h-1.5 w-1.5 ${
                                     active
-                                      ? "bg-[var(--color-cyan)] shadow-[0_0_10px_var(--color-cyan)]"
+                                      ? "bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]"
                                       : "bg-[var(--color-dim)]"
                                   }`}
                                 />
@@ -274,7 +274,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                               <h4
                                 className={`portfolio-display mt-7 text-xl font-bold md:text-2xl ${
                                   active
-                                    ? "text-[var(--color-cyan)]"
+                                    ? "text-[var(--color-primary)]"
                                     : "text-white"
                                 }`}
                               >
@@ -305,7 +305,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
 
               <a
                 href="#projects"
-                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)] hover:text-white"
+                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] hover:text-white"
               >
                 PROJECT ARCHIVE →
               </a>

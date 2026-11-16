@@ -170,7 +170,10 @@ export default function PortfolioWorld({
     [activeWorld, setWorld],
   );
 
-  const config = useMemo(() => getWorldConfig(activeWorld), [activeWorld]);
+  const config = useMemo(
+    () => getWorldConfig(activeWorld, theme),
+    [activeWorld, theme],
+  );
 
   return (
     <PortfolioWorldContext.Provider value={contextValue}>

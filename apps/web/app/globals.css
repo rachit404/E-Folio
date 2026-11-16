@@ -5,8 +5,8 @@
   --color-graphite: #0b0e12;
   --color-panel: #10151b;
 
-  --color-cyan: #00e5ff;
-  --color-red: #ff2147;
+  --color-primary: #00e5ff;
+  --color-accent: #ff2147;
 
   --color-white: #f4f1ea;
   --color-muted: #8b949e;
@@ -63,7 +63,7 @@ a {
 }
 
 ::selection {
-  background: var(--color-cyan);
+  background: var(--color-primary);
   color: var(--color-void);
 }
 
@@ -82,7 +82,7 @@ a {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan);
+  background: var(--color-primary);
 }
 
 /* Utility classes */

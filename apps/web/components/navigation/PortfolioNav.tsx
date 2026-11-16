@@ -202,7 +202,7 @@ export default function PortfolioNav({
     <>
       <div className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-px bg-white/[0.04]">
         <div
-          className="h-full origin-left bg-gradient-to-r from-[var(--color-cyan)] via-[var(--color-cyan)] to-[var(--color-red)] transition-transform duration-150"
+          className="h-full origin-left bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-primary)] to-[var(--color-accent)] transition-transform duration-150"
           style={{
             transform: `scaleX(${scrollProgress})`,
           }}
@@ -219,7 +219,7 @@ export default function PortfolioNav({
           >
             <div className="portfolio-display text-xl font-black md:text-2xl">
               RD
-              <span className="text-[var(--color-red)]">.</span>
+              <span className="text-[var(--color-accent)]">.</span>
             </div>
 
             <div className="portfolio-mono mt-0.5 text-[8px] text-[var(--color-dim)]">
@@ -250,7 +250,7 @@ export default function PortfolioNav({
                     <span
                       className={`mr-1 text-[7px] ${
                         active
-                          ? "text-[var(--color-cyan)]"
+                          ? "text-[var(--color-primary)]"
                           : "text-[var(--color-dim)]"
                       }`}
                     >
@@ -260,7 +260,7 @@ export default function PortfolioNav({
                     {item.label}
 
                     <span
-                      className={`absolute -bottom-2 left-0 h-px bg-[var(--color-cyan)] transition-all duration-300 ${
+                      className={`absolute -bottom-2 left-0 h-px bg-[var(--color-primary)] transition-all duration-300 ${
                         active ? "w-full" : "w-0 group-hover:w-full"
                       }`}
                     />
@@ -282,7 +282,7 @@ export default function PortfolioNav({
                   id="portfolio-role"
                   value={activeRole}
                   onChange={(event) => switchRole(event.target.value)}
-                  className="portfolio-mono cursor-pointer appearance-none border border-[var(--color-cyan)]/20 bg-[var(--color-panel)] px-3 py-2 text-[8px] tracking-[0.12em] text-[var(--color-cyan)] outline-none"
+                  className="portfolio-mono cursor-pointer appearance-none border border-[var(--color-primary)]/20 bg-[var(--color-panel)] px-3 py-2 text-[8px] tracking-[0.12em] text-[var(--color-primary)] outline-none"
                 >
                   {profiles.map((profile) => (
                     <option key={profile} value={profile}>
@@ -297,7 +297,7 @@ export default function PortfolioNav({
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-white transition-colors hover:border-[var(--color-cyan)]/40 md:hidden"
+            className="portfolio-mono flex h-10 w-10 items-center justify-center border border-white/10 text-xs text-white transition-colors hover:border-[var(--color-primary)]/40 md:hidden"
             aria-label={open ? "Close navigation" : "Open navigation"}
             aria-expanded={open}
           >
@@ -314,7 +314,7 @@ export default function PortfolioNav({
         }`}
       >
         <nav className="flex h-full flex-col justify-center px-8">
-          <span className="portfolio-mono mb-8 text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+          <span className="portfolio-mono mb-8 text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
             NAVIGATION // WORLD SYSTEM
           </span>
 
@@ -329,19 +329,19 @@ export default function PortfolioNav({
                 tabIndex={open ? 0 : -1}
                 className="flex items-center border-b border-white/10 py-5"
               >
-                <span className="portfolio-mono mr-6 text-[9px] text-[var(--color-cyan)]">
+                <span className="portfolio-mono mr-6 text-[9px] text-[var(--color-primary)]">
                   {item.number}
                 </span>
 
                 <span
                   className={`portfolio-display text-3xl font-bold ${
-                    active ? "text-[var(--color-cyan)]" : "text-white"
+                    active ? "text-[var(--color-primary)]" : "text-white"
                   }`}
                 >
                   {item.label}
                 </span>
 
-                <span className="ml-auto text-[var(--color-red)]">→</span>
+                <span className="ml-auto text-[var(--color-accent)]">→</span>
               </a>
             );
           })}
@@ -359,7 +359,7 @@ export default function PortfolioNav({
                 id="portfolio-role-mobile"
                 value={activeRole}
                 onChange={(event) => switchRole(event.target.value)}
-                className="portfolio-mono w-full border border-[var(--color-cyan)]/30 bg-[var(--color-panel)] px-4 py-4 text-sm text-[var(--color-cyan)] outline-none"
+                className="portfolio-mono w-full border border-[var(--color-primary)]/30 bg-[var(--color-panel)] px-4 py-4 text-sm text-[var(--color-primary)] outline-none"
               >
                 {profiles.map((profile) => (
                   <option key={profile} value={profile}>

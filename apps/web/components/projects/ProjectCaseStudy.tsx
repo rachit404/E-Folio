@@ -283,17 +283,17 @@ export default function ProjectCaseStudy({
     >
       {/* Global atmosphere */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-[8%] top-[18%] h-px w-[45%] bg-[var(--color-cyan)]/20" />
+        <div className="absolute left-[8%] top-[18%] h-px w-[45%] bg-[var(--color-primary)]/20" />
 
-        <div className="absolute right-[5%] top-[34%] h-px w-[30%] bg-[var(--color-red)]/20" />
+        <div className="absolute right-[5%] top-[34%] h-px w-[30%] bg-[var(--color-accent)]/20" />
 
-        <div className="absolute bottom-[20%] left-[20%] h-px w-[25%] bg-[var(--color-red)]/10" />
+        <div className="absolute bottom-[20%] left-[20%] h-px w-[25%] bg-[var(--color-accent)]/10" />
 
-        <div className="absolute bottom-[15%] right-[12%] h-48 w-48 border border-[var(--color-cyan)]/10" />
+        <div className="absolute bottom-[15%] right-[12%] h-48 w-48 border border-[var(--color-primary)]/10" />
 
-        <div className="absolute bottom-[18%] right-[15%] h-32 w-32 border border-[var(--color-red)]/10" />
+        <div className="absolute bottom-[18%] right-[15%] h-32 w-32 border border-[var(--color-accent)]/10" />
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(0,229,255,0.07),transparent_35%),radial-gradient(circle_at_25%_70%,rgba(255,33,71,0.06),transparent_35%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_srgb,var(--color-primary)_7%,transparent),transparent_35%),radial-gradient(circle_at_25%_70%,color-mix(in_srgb,var(--color-accent)_6%,transparent),transparent_35%)]" />
 
         <div className="absolute inset-0 opacity-[0.025] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:80px_80px]" />
       </div>
@@ -307,11 +307,11 @@ export default function ProjectCaseStudy({
             className="mb-14 flex items-center justify-between border-b border-[var(--color-white)]/10 pb-5"
           >
             <div className="flex items-center gap-4">
-              <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+              <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
                 CASE STUDY
               </span>
 
-              <span className="h-px w-8 bg-[var(--color-red)]" />
+              <span className="h-px w-8 bg-[var(--color-accent)]" />
 
               <span className="portfolio-mono text-[8px] text-[var(--color-dim)]">
                 ARTIFACT {String(index + 1).padStart(2, "0")}
@@ -322,7 +322,7 @@ export default function ProjectCaseStudy({
               ref={closeButtonRef}
               type="button"
               onClick={handleClose}
-              className="portfolio-mono flex items-center gap-3 border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all hover:border-[var(--color-red)]/50 hover:text-[var(--color-red)] focus:border-[var(--color-cyan)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-cyan)]/40"
+              className="portfolio-mono flex items-center gap-3 border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] focus:border-[var(--color-primary)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/40"
               aria-label="Close project case study"
             >
               CLOSE
@@ -335,7 +335,7 @@ export default function ProjectCaseStudy({
             <div>
               <p
                 data-case-label
-                className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-red)]"
+                className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-accent)]"
               >
                 PROJECT RECORD / VERIFIED
               </p>
@@ -350,7 +350,7 @@ export default function ProjectCaseStudy({
 
               <div
                 data-case-description
-                className="mt-10 max-w-3xl border-l border-[var(--color-cyan)]/40 pl-6"
+                className="mt-10 max-w-3xl border-l border-[var(--color-primary)]/40 pl-6"
               >
                 <p className="text-base leading-8 text-[var(--color-muted)] md:text-lg">
                   {project.description}
@@ -362,7 +362,7 @@ export default function ProjectCaseStudy({
                 {project.metadata.primary && (
                   <span
                     data-case-meta
-                    className="portfolio-mono border border-[var(--color-cyan)]/25 bg-[var(--color-cyan)]/[0.03] px-4 py-3 text-[8px] tracking-[0.12em] text-[var(--color-cyan)]"
+                    className="portfolio-mono border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/[0.03] px-4 py-3 text-[8px] tracking-[0.12em] text-[var(--color-primary)]"
                   >
                     {project.metadata.primary}
                   </span>
@@ -382,7 +382,7 @@ export default function ProjectCaseStudy({
             {/* Artifact visualizer */}
             <div
               data-case-visual
-              className="relative min-h-[340px] overflow-hidden border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/30"
+              className="relative min-h-[340px] overflow-hidden border border-[var(--color-primary)]/20 bg-[var(--color-panel)]/30"
             >
               <div className="absolute inset-5 border border-[var(--color-white)]/5" />
 
@@ -393,30 +393,30 @@ export default function ProjectCaseStudy({
               </div>
 
               {/* Orbit */}
-              <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 animate-[spin_18s_linear_infinite] rounded-full border border-[var(--color-cyan)]/20">
-                <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_15px_var(--color-cyan)]" />
+              <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 animate-[spin_18s_linear_infinite] rounded-full border border-[var(--color-primary)]/20">
+                <div className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)]" />
               </div>
 
               {/* Counter orbit */}
-              <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-[var(--color-red)]/20">
-                <div className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 translate-y-1/2 bg-[var(--color-red)] shadow-[0_0_15px_var(--color-red)]" />
+              <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-[var(--color-accent)]/20">
+                <div className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 translate-y-1/2 bg-[var(--color-accent)] shadow-[0_0_15px_var(--color-accent)]" />
               </div>
 
               {/* Core */}
-              <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 border border-[var(--color-cyan)]/30">
-                <div className="absolute inset-5 border border-[var(--color-red)]/30" />
+              <div className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 border border-[var(--color-primary)]/30">
+                <div className="absolute inset-5 border border-[var(--color-accent)]/30" />
 
-                <div className="absolute inset-10 border border-[var(--color-cyan)]/30" />
+                <div className="absolute inset-10 border border-[var(--color-primary)]/30" />
 
-                <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-cyan)] shadow-[0_0_25px_var(--color-cyan)]" />
+                <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 bg-[var(--color-primary)] shadow-[0_0_25px_var(--color-primary)]" />
               </div>
 
               {/* Crosshair */}
-              <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-px -translate-x-1/2 bg-[var(--color-cyan)]/10" />
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-px -translate-x-1/2 bg-[var(--color-primary)]/10" />
 
-              <div className="pointer-events-none absolute left-1/2 top-1/2 h-px w-72 -translate-x-1/2 bg-[var(--color-cyan)]/10" />
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-px w-72 -translate-x-1/2 bg-[var(--color-primary)]/10" />
 
-              <span className="portfolio-mono absolute bottom-7 left-7 text-[7px] tracking-[0.16em] text-[var(--color-cyan)]">
+              <span className="portfolio-mono absolute bottom-7 left-7 text-[7px] tracking-[0.16em] text-[var(--color-primary)]">
                 SYSTEM / ONLINE
               </span>
 
@@ -432,7 +432,7 @@ export default function ProjectCaseStudy({
             className="mt-24 grid gap-10 lg:grid-cols-[0.35fr_1fr]"
           >
             <div>
-              <p className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+              <p className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
                 IMPLEMENTATION LOG
               </p>
 
@@ -451,7 +451,7 @@ export default function ProjectCaseStudy({
                       data-case-detail
                       className="group flex gap-5 border-b border-[var(--color-white)]/10 py-6"
                     >
-                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-red)]">
+                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-accent)]">
                         {String(detailIndex + 1).padStart(2, "0")}
                       </span>
 
@@ -459,7 +459,7 @@ export default function ProjectCaseStudy({
                         {detail}
                       </span>
 
-                      <span className="ml-auto mt-2 hidden h-1 w-1 shrink-0 bg-[var(--color-cyan)] opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
+                      <span className="ml-auto mt-2 hidden h-1 w-1 shrink-0 bg-[var(--color-primary)] opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
                     </li>
                   ))}
                 </ul>
@@ -491,7 +491,7 @@ export default function ProjectCaseStudy({
                       href={link.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="portfolio-mono inline-flex items-center gap-4 border border-[var(--color-cyan)]/20 px-5 py-3 text-[8px] tracking-[0.14em] text-[var(--color-cyan)] transition-all hover:border-[var(--color-cyan)]/60 hover:bg-[var(--color-cyan)]/[0.04] focus:border-[var(--color-cyan)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-cyan)]/30"
+                      className="portfolio-mono inline-flex items-center gap-4 border border-[var(--color-primary)]/20 px-5 py-3 text-[8px] tracking-[0.14em] text-[var(--color-primary)] transition-all hover:border-[var(--color-primary)]/60 hover:bg-[var(--color-primary)]/[0.04] focus:border-[var(--color-primary)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/30"
                     >
                       {link.label.toUpperCase()}
                       <span>↗</span>
@@ -515,7 +515,7 @@ export default function ProjectCaseStudy({
             <button
               type="button"
               onClick={handleClose}
-              className="portfolio-mono text-[8px] tracking-[0.14em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)] focus:outline-none"
+              className="portfolio-mono text-[8px] tracking-[0.14em] text-[var(--color-primary)] transition-colors hover:text-[var(--color-white)] focus:outline-none"
             >
               RETURN TO ARCHIVE ↑
             </button>

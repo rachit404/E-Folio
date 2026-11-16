@@ -172,9 +172,9 @@ export default function Hero({ portfolio, theme }: HeroProps) {
             {/* Identity */}
             <div className="max-w-5xl">
               <div data-hero-eyebrow className="mb-7 flex items-center gap-4">
-                <span className="h-px w-10 bg-[var(--color-red)]" />
+                <span className="h-px w-10 bg-[var(--color-accent)]" />
 
-                <p className="portfolio-mono text-[10px] tracking-[0.18em] text-[var(--color-cyan)]">
+                <p className="portfolio-mono text-[10px] tracking-[0.18em] text-[var(--color-primary)]">
                   {theme.hero.eyebrow}
                 </p>
               </div>
@@ -185,14 +185,14 @@ export default function Hero({ portfolio, theme }: HeroProps) {
               >
                 {portfolio.metadata.name}
 
-                <span className="text-[var(--color-red)]">.</span>
+                <span className="text-[var(--color-accent)]">.</span>
               </h1>
 
               <div
                 data-hero-subtitle
                 className="mt-10 flex max-w-2xl items-start gap-5"
               >
-                <span className="mt-3 h-px w-14 shrink-0 bg-[var(--color-red)]" />
+                <span className="mt-3 h-px w-14 shrink-0 bg-[var(--color-accent)]" />
 
                 <p className="text-base leading-7 text-[var(--color-white)]/75 md:text-lg">
                   {portfolio.metadata.course}
@@ -205,7 +205,7 @@ export default function Hero({ portfolio, theme }: HeroProps) {
               >
                 <a
                   href="#about"
-                  className="portfolio-mono border border-[var(--color-cyan)]/55 bg-[var(--color-void)]/35 px-7 py-4 text-[10px] tracking-[0.12em] backdrop-blur-sm transition-all duration-300 hover:bg-[var(--color-cyan)] hover:text-[var(--color-void)]"
+                  className="portfolio-mono border border-[var(--color-primary)]/55 bg-[var(--color-void)]/35 px-7 py-4 text-[10px] tracking-[0.12em] backdrop-blur-sm transition-all duration-300 hover:bg-[var(--color-primary)] hover:text-[var(--color-void)]"
                 >
                   {theme.hero.cta} →
                 </a>
@@ -218,8 +218,8 @@ export default function Hero({ portfolio, theme }: HeroProps) {
 
             {/* World system readout */}
             <div data-hero-system className="hidden justify-self-end lg:block">
-              <div className="w-[300px] border-l border-[var(--color-cyan)]/30 pl-6">
-                <div className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-cyan)]">
+              <div className="w-[300px] border-l border-[var(--color-primary)]/30 pl-6">
+                <div className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-primary)]">
                   WORLD SYSTEM
                 </div>
 
@@ -257,9 +257,9 @@ export default function Hero({ portfolio, theme }: HeroProps) {
                   <div className="h-px w-full bg-[var(--color-white)]/10" />
 
                   <div className="flex items-center gap-3">
-                    <span className="h-1.5 w-1.5 bg-[var(--color-cyan)] shadow-[0_0_12px_var(--color-cyan)]" />
+                    <span className="h-1.5 w-1.5 bg-[var(--color-primary)] shadow-[0_0_12px_var(--color-primary)]" />
 
-                    <span className="portfolio-mono text-[8px] text-[var(--color-cyan)]">
+                    <span className="portfolio-mono text-[8px] text-[var(--color-primary)]">
                       WORLD ONLINE
                     </span>
                   </div>
@@ -273,7 +273,7 @@ export default function Hero({ portfolio, theme }: HeroProps) {
             className="absolute bottom-10 right-6 md:right-10"
           >
             <div className="portfolio-mono flex items-center gap-3 text-[8px] text-[var(--color-muted)]">
-              <span className="h-1.5 w-1.5 bg-[var(--color-cyan)] shadow-[0_0_10px_var(--color-cyan)]" />
+              <span className="h-1.5 w-1.5 bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
 
               {theme.hero.status}
             </div>

@@ -44,7 +44,7 @@ export default async function RolePage({ params }: RolePageProps) {
 
   const [portfolio, theme] = await Promise.all([
     loadPortfolio(activeRole),
-    loadTheme(),
+    loadTheme(activeRole),
   ]);
 
   return (

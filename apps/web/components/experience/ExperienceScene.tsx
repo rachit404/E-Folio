@@ -170,14 +170,14 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end"
             >
               <div>
-                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
+                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
                   CAREER LOG // 02
                 </p>
 
                 <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.82] tracking-[-0.06em]">
                   FIELD
                   <br />
-                  <span className="text-[var(--color-red)]">RECORDS</span>
+                  <span className="text-[var(--color-accent)]">RECORDS</span>
                 </h2>
               </div>
 
@@ -193,7 +193,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
               <div className="relative">
                 <div
                   data-experience-rail
-                  className="absolute bottom-0 left-[11px] top-0 w-px bg-gradient-to-b from-[var(--color-cyan)] via-[var(--color-cyan)]/30 to-transparent md:left-[15px]"
+                  className="absolute bottom-0 left-[11px] top-0 w-px bg-gradient-to-b from-[var(--color-primary)] via-[var(--color-primary)]/30 to-transparent md:left-[15px]"
                 />
 
                 <div className="space-y-10 md:space-y-14">
@@ -218,19 +218,19 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
                         >
                           <div
                             data-experience-node
-                            className="absolute left-[5px] top-2 flex h-3 w-3 items-center justify-center rounded-full border border-[var(--color-cyan)] bg-[var(--color-void)] md:left-[9px]"
+                            className="absolute left-[5px] top-2 flex h-3 w-3 items-center justify-center rounded-full border border-[var(--color-primary)] bg-[var(--color-void)] md:left-[9px]"
                           >
-                            <span className="h-1 w-1 rounded-full bg-[var(--color-cyan)]" />
+                            <span className="h-1 w-1 rounded-full bg-[var(--color-primary)]" />
                           </div>
 
-                          <div className="group relative overflow-hidden border border-white/10 bg-[var(--color-panel)]/30 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-cyan)]/30 hover:bg-[var(--color-panel)]/50 md:p-8">
-                            <div className="pointer-events-none absolute right-0 top-0 h-px w-0 bg-[var(--color-cyan)] transition-all duration-500 group-hover:w-full" />
+                          <div className="group relative overflow-hidden border border-white/10 bg-[var(--color-panel)]/30 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-panel)]/50 md:p-8">
+                            <div className="pointer-events-none absolute right-0 top-0 h-px w-0 bg-[var(--color-primary)] transition-all duration-500 group-hover:w-full" />
 
                             <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                               <div>
                                 <p
                                   data-experience-detail
-                                  className="portfolio-mono mb-2 text-[8px] tracking-[0.16em] text-[var(--color-cyan)]"
+                                  className="portfolio-mono mb-2 text-[8px] tracking-[0.16em] text-[var(--color-primary)]"
                                 >
                                   {section.heading}
                                 </p>
@@ -244,7 +244,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
 
                                 <p
                                   data-experience-detail
-                                  className="mt-2 text-sm text-[var(--color-red)]"
+                                  className="mt-2 text-sm text-[var(--color-accent)]"
                                 >
                                   {item.role}
                                 </p>
@@ -276,7 +276,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
                                       data-experience-detail
                                       className="flex gap-4 text-sm leading-6 text-[var(--color-muted)]"
                                     >
-                                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-cyan)]">
+                                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-primary)]">
                                         {String(detailIndex + 1).padStart(
                                           2,
                                           "0",
@@ -301,7 +301,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
             {positionEntries.length > 0 && (
               <div className="mt-24">
                 <div className="mb-8 flex items-center gap-4">
-                  <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-cyan)]">
+                  <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
                     ADDITIONAL RECORDS
                   </span>
 
@@ -325,21 +325,21 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
                         <article
                           key={`${section.heading}-${itemIndex}`}
                           data-position-entry
-                          className="group relative border border-white/10 bg-[var(--color-panel)]/20 p-6 transition-all duration-500 hover:border-[var(--color-red)]/30 hover:bg-[var(--color-panel)]/40"
+                          className="group relative border border-white/10 bg-[var(--color-panel)]/20 p-6 transition-all duration-500 hover:border-[var(--color-accent)]/30 hover:bg-[var(--color-panel)]/40"
                         >
                           <div className="mb-6 flex items-center justify-between">
                             <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
                               POSITION
                             </span>
 
-                            <span className="h-1.5 w-1.5 bg-[var(--color-red)] opacity-50 transition-opacity group-hover:opacity-100" />
+                            <span className="h-1.5 w-1.5 bg-[var(--color-accent)] opacity-50 transition-opacity group-hover:opacity-100" />
                           </div>
 
                           <h3 className="portfolio-display text-xl font-bold text-[var(--color-white)] md:text-2xl">
                             {item.title}
                           </h3>
 
-                          <p className="mt-2 text-sm text-[var(--color-red)]">
+                          <p className="mt-2 text-sm text-[var(--color-accent)]">
                             {item.organization}
                           </p>
 
@@ -369,7 +369,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
 
               <a
                 href="#skills"
-                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)] transition-colors hover:text-[var(--color-white)]"
+                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] transition-colors hover:text-[var(--color-white)]"
               >
                 SKILLS →
               </a>

@@ -22,17 +22,17 @@ export default function PortfolioHUD({
           key={`${worldId}-meta`}
           className="portfolio-mono flex items-center gap-3 text-[8px] tracking-[0.16em] text-[var(--color-dim)] transition-all duration-700"
         >
-          <span className="text-[var(--color-cyan)]">{number}</span>
+          <span className="text-[var(--color-primary)]">{number}</span>
 
-          <span className="h-px w-8 bg-[var(--color-red)]/60" />
+          <span className="h-px w-8 bg-[var(--color-accent)]/60" />
 
           <span>{label}</span>
 
           {forced && (
             <>
-              <span className="h-1 w-1 rounded-full bg-[var(--color-red)] shadow-[0_0_8px_var(--color-red)]" />
+              <span className="h-1 w-1 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_var(--color-accent)]" />
 
-              <span className="text-[var(--color-red)]">LOCKED</span>
+              <span className="text-[var(--color-accent)]">LOCKED</span>
             </>
           )}
         </div>
@@ -45,7 +45,7 @@ export default function PortfolioHUD({
 
           <span className="h-px w-5 bg-white/10" />
 
-          <span className="text-[var(--color-cyan)]">
+          <span className="text-[var(--color-primary)]">
             {worldId.toUpperCase()}
           </span>
         </div>

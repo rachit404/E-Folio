@@ -276,7 +276,7 @@ export default function ProjectCarousel({
 
                 selectIndex(index);
               }}
-              className="absolute left-1/2 top-1/2 h-[340px] w-[min(78vw,460px)] -translate-x-1/2 -translate-y-1/2 text-left outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+              className="absolute left-1/2 top-1/2 h-[340px] w-[min(78vw,460px)] -translate-x-1/2 -translate-y-1/2 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
               style={{
                 transform: `
                     translate(-50%, -50%)
@@ -299,10 +299,10 @@ export default function ProjectCarousel({
                   "bg-black/70 backdrop-blur-xl",
                   "shadow-[0_30px_100px_rgba(0,0,0,0.55)]",
                   "transition-colors duration-300",
-                  isActive ? "border-cyan-300/50" : "hover:border-white/30",
+                  isActive ? "border-[var(--color-primary)]/50" : "hover:border-white/30",
                 ].join(" ")}
               >
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(34,211,238,0.08),transparent_40%,rgba(239,68,68,0.06))]" />
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-primary)_8%,transparent),transparent_40%,color-mix(in_srgb,var(--color-accent)_6%,transparent))]" />
 
                 <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
                   <span>Artifact {String(index + 1).padStart(2, "0")}</span>
@@ -312,7 +312,7 @@ export default function ProjectCarousel({
 
                 <div className="relative flex flex-1 flex-col p-6">
                   <div className="mb-5">
-                    <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em] text-cyan-300/70">
+                    <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--color-primary)]/70">
                       {project.metadata.primary}
                     </p>
 
@@ -330,7 +330,7 @@ export default function ProjectCarousel({
                       {project.metadata.secondary}
                     </span>
 
-                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-300/70">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-primary)]/70">
                       {isActive ? "Enter / Click" : "Select"}
                     </span>
                   </div>
@@ -347,7 +347,7 @@ export default function ProjectCarousel({
             type="button"
             onClick={() => rotate(-1)}
             aria-label="Previous project"
-            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-cyan-300/50 hover:text-cyan-300"
+            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-[var(--color-primary)]/50 hover:text-[var(--color-primary)]"
           >
             ←
           </button>
@@ -363,7 +363,7 @@ export default function ProjectCarousel({
                 className={[
                   "h-1.5 rounded-full transition-all duration-300",
                   index === activeIndex
-                    ? "w-8 bg-cyan-300"
+                    ? "w-8 bg-[var(--color-primary)]"
                     : "w-2 bg-white/25 hover:bg-white/50",
                 ].join(" ")}
               />
@@ -374,7 +374,7 @@ export default function ProjectCarousel({
             type="button"
             onClick={() => rotate(1)}
             aria-label="Next project"
-            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-cyan-300/50 hover:text-cyan-300"
+            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-[var(--color-primary)]/50 hover:text-[var(--color-primary)]"
           >
             →
           </button>

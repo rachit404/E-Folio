@@ -28,11 +28,11 @@ export default function WorldFrame({
     >
       <div className="pointer-events-none absolute inset-x-0 top-24 z-20 px-6 md:px-10">
         <div className="mx-auto flex max-w-[1600px] items-center gap-4">
-          <span className="portfolio-mono text-[9px] text-[var(--color-cyan)]">
+          <span className="portfolio-mono text-[9px] text-[var(--color-primary)]">
             {number}
           </span>
 
-          <span className="h-px w-8 bg-[var(--color-red)]" />
+          <span className="h-px w-8 bg-[var(--color-accent)]" />
 
           <span className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-muted)]">
             {label}

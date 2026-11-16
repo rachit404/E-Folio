@@ -5,44 +5,91 @@
     "universe": "E-FOLIO"
   },
 
-  "colors": {
-    "void": "#050608",
-    "graphite": "#0b0e12",
-    "panel": "#10151b",
-    "cyan": "#00e5ff",
-    "red": "#ff2147",
-    "white": "#f4f1ea",
-    "muted": "#8b949e",
-    "dim": "#4d5660"
-  },
+  "default": "spiderman",
 
-  "hero": {
-    "backgroundImage": "",
-    "foregroundImage": "",
-    "character": "spider-engineer",
-    "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
-    "status": "SYSTEM ONLINE",
-    "cta": "ENTER PORTFOLIO",
-    "scrollLabel": "SCROLL TO EXPLORE"
-  },
+  "roles": {},
 
-  "navigation": {
-    "showNumbers": true
-  },
+  "presets": {
+    "spiderman": {
+      "colors": {
+        "void": "#050608",
+        "graphite": "#0b0e12",
+        "panel": "#10151b",
+        "primary": "#00e5ff",
+        "accent": "#ff2147",
+        "white": "#f4f1ea",
+        "muted": "#8b949e",
+        "dim": "#4d5660"
+      },
 
-  "world": {
-    "defaultWorld": "home",
-    "backgroundOpacity": 0.9,
-    "enableParallax": true,
-    "enableAtmosphere": true
-  },
+      "hero": {
+        "backgroundImage": "",
+        "foregroundImage": "",
+        "character": "spider-engineer",
+        "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
+        "status": "SYSTEM ONLINE",
+        "cta": "ENTER PORTFOLIO",
+        "scrollLabel": "SCROLL TO EXPLORE"
+      },
 
-  "mascot": {
-    "id": "spider-engineer",
-    "enabled": true,
-    "scale": 0.78,
-    "primary": "#b51232",
-    "secondary": "#0b1530",
-    "accent": "#00e5ff"
+      "navigation": {
+        "showNumbers": true
+      },
+
+      "world": {
+        "defaultWorld": "home",
+        "backgroundOpacity": 0.9,
+        "enableParallax": true,
+        "enableAtmosphere": true
+      },
+
+      "mascot": {
+        "id": "spider-engineer",
+        "enabled": true,
+        "scale": 0.78,
+        "primary": "#b51232",
+        "secondary": "#0b1530",
+        "accent": "#00e5ff"
+      }
+    },
+
+    "hulk": {
+      "colors": {
+        "void": "#06080a",
+        "graphite": "#0c110d",
+        "panel": "#111a13",
+        "primary": "#39ff6a",
+        "accent": "#9b4dff",
+        "white": "#eef5ea",
+        "muted": "#8fa392",
+        "dim": "#506054"
+      },
+
+      "hero": {
+        "backgroundImage": "",
+        "foregroundImage": "",
+        "character": "hulk",
+        "eyebrow": "E-FOLIO // ENGINEERING PORTFOLIO",
+        "status": "POWER LEVEL: RISING",
+        "cta": "ENTER PORTFOLIO",
+        "scrollLabel": "SCROLL TO SMASH"
+      },
+
+      "navigation": {
+        "showNumbers": true
+      },
+
+      "world": {
+        "defaultWorld": "home",
+        "backgroundOpacity": 0.9,
+        "enableParallax": true,
+        "enableAtmosphere": true
+      },
+
+      "mascot": {
+        "id": "hulk",
+        "enabled": false
+      }
+    }
   }
 }

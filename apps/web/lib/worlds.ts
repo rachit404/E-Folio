@@ -1,5 +1,7 @@
 import type { WorldConfig, WorldId } from "@/components/world/WorldTypes";
 
+import type { PortfolioTheme } from "./theme";
+
 export const WORLD_CONFIGS: Record<WorldId, WorldConfig> = {
   home: {
     id: "home",
@@ -173,6 +175,13 @@ export const WORLD_CONFIGS: Record<WorldId, WorldConfig> = {
   },
 };
 
-export function getWorldConfig(worldId: WorldId): WorldConfig {
-  return WORLD_CONFIGS[worldId];
+export function getWorldConfig(
+  worldId: WorldId,
+  theme?: PortfolioTheme,
+): WorldConfig {
+  const config = WORLD_CONFIGS[worldId];
+
+  const background = theme?.world?.backgrounds?.[worldId];
+
+  return background ? { ...config, background } : config;
 }

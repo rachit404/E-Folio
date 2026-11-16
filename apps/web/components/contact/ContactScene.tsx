@@ -93,8 +93,8 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
       <div ref={sceneRef}>
         <section className="relative min-h-screen overflow-hidden py-20 md:py-28">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[8%] top-[20%] h-px w-[32%] bg-[var(--color-cyan)]/20" />
-            <div className="absolute right-[8%] top-[35%] h-px w-[24%] bg-[var(--color-red)]/20" />
+            <div className="absolute left-[8%] top-[20%] h-px w-[32%] bg-[var(--color-primary)]/20" />
+            <div className="absolute right-[8%] top-[35%] h-px w-[24%] bg-[var(--color-accent)]/20" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
@@ -102,7 +102,7 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
               <div>
                 <p
                   data-contact-element
-                  className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-cyan)]"
+                  className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-primary)]"
                 >
                   06 / OPEN CHANNEL
                 </p>
@@ -113,12 +113,12 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
                 >
                   LET&apos;S
                   <br />
-                  <span className="text-[var(--color-red)]">BUILD.</span>
+                  <span className="text-[var(--color-accent)]">BUILD.</span>
                 </h2>
 
                 <p
                   data-contact-element
-                  className="mt-10 max-w-xl border-l border-[var(--color-cyan)]/40 pl-6 text-base leading-8 text-[var(--color-muted)] md:text-lg"
+                  className="mt-10 max-w-xl border-l border-[var(--color-primary)]/40 pl-6 text-base leading-8 text-[var(--color-muted)] md:text-lg"
                 >
                   Establish a transmission through any available channel.
                 </p>
@@ -142,10 +142,10 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
 
               <div
                 data-contact-element
-                className="border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/40 backdrop-blur-sm"
+                className="border border-[var(--color-primary)]/20 bg-[var(--color-panel)]/40 backdrop-blur-sm"
               >
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-                  <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-cyan)]">
+                  <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-primary)]">
                     TRANSMISSION TERMINAL
                   </span>
 
@@ -170,12 +170,12 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
                       rel={link.external ? "noopener noreferrer" : undefined}
                       className="group flex items-center gap-4 border-b border-white/10 px-5 py-6 transition hover:bg-white/[0.02]"
                     >
-                      <span className="portfolio-mono flex h-8 w-8 shrink-0 items-center justify-center border border-white/10 text-[8px] text-[var(--color-dim)] group-hover:border-[var(--color-cyan)]/40 group-hover:text-[var(--color-cyan)]">
+                      <span className="portfolio-mono flex h-8 w-8 shrink-0 items-center justify-center border border-white/10 text-[8px] text-[var(--color-dim)] group-hover:border-[var(--color-primary)]/40 group-hover:text-[var(--color-primary)]">
                         {String(index + 1).padStart(2, "0")}
                       </span>
 
                       <div className="min-w-0 flex-1">
-                        <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)]">
+                        <p className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)]">
                           {link.label}
                         </p>
 
@@ -184,7 +184,7 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
                         </p>
                       </div>
 
-                      <span className="text-[var(--color-red)]">
+                      <span className="text-[var(--color-accent)]">
                         {link.external ? "↗" : "→"}
                       </span>
                     </a>
@@ -203,7 +203,7 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
 
               <a
                 href="#home"
-                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)] hover:text-white"
+                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] hover:text-white"
               >
                 RETURN TO ORIGIN ↑
               </a>

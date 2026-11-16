@@ -24,8 +24,8 @@ function WorldScene({ config, theme }: WorldStageProps) {
       <WorldAtmosphere config={config} />
 
       <WorldLighting
-        primary={theme.colors.cyan}
-        secondary={theme.colors.red}
+        primary={theme.colors.primary}
+        secondary={theme.colors.accent}
         foreground={theme.colors.white}
       />
 

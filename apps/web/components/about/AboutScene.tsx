@@ -64,8 +64,8 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
       <div ref={sceneRef}>
         <section className="relative overflow-hidden py-20 md:py-28">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[8%] top-[20%] h-px w-[30%] bg-[var(--color-cyan)]/20" />
-            <div className="absolute right-[8%] top-[34%] h-px w-[22%] bg-[var(--color-red)]/20" />
+            <div className="absolute left-[8%] top-[20%] h-px w-[30%] bg-[var(--color-primary)]/20" />
+            <div className="absolute right-[8%] top-[34%] h-px w-[22%] bg-[var(--color-accent)]/20" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
@@ -73,7 +73,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
               <div>
                 <p
                   data-about-element
-                  className="portfolio-mono mb-6 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]"
+                  className="portfolio-mono mb-6 text-[9px] tracking-[0.2em] text-[var(--color-primary)]"
                 >
                   01 / IDENTITY
                 </p>
@@ -83,13 +83,13 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
                   className="portfolio-display text-[clamp(3.5rem,7vw,7rem)] font-black uppercase leading-[0.82] tracking-[-0.06em]"
                 >
                   {portfolio.metadata.name ?? "ENGINEER"}
-                  <span className="text-[var(--color-red)]">.</span>
+                  <span className="text-[var(--color-accent)]">.</span>
                 </h2>
 
                 {portfolio.metadata.course && (
                   <p
                     data-about-element
-                    className="portfolio-mono mt-6 text-[9px] tracking-[0.14em] text-[var(--color-cyan)]"
+                    className="portfolio-mono mt-6 text-[9px] tracking-[0.14em] text-[var(--color-primary)]"
                   >
                     {portfolio.metadata.course}
                   </p>
@@ -97,7 +97,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
 
                 <div
                   data-about-element
-                  className="mt-10 border-l border-[var(--color-cyan)]/40 pl-6"
+                  className="mt-10 border-l border-[var(--color-primary)]/40 pl-6"
                 >
                   <p className="text-base leading-8 text-[var(--color-muted)] md:text-lg">
                     The portfolio record below is derived directly from the
@@ -111,7 +111,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
                 className="border border-white/10 bg-[var(--color-panel)]/30"
               >
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-                  <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-cyan)]">
+                  <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-primary)]">
                     PORTFOLIO RECORD
                   </span>
 
@@ -137,7 +137,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
                         </p>
                       </div>
 
-                      <span className="portfolio-mono text-[8px] text-[var(--color-cyan)]">
+                      <span className="portfolio-mono text-[8px] text-[var(--color-primary)]">
                         {String(section.items.length).padStart(2, "0")}
                       </span>
                     </div>
@@ -170,7 +170,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
               <div data-about-element className="md:text-right">
                 <a
                   href="#experience"
-                  className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)] hover:text-white"
+                  className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] hover:text-white"
                 >
                   EXPERIENCE →
                 </a>

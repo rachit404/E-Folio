@@ -58,31 +58,31 @@ export default function NotFound() {
 
         <div className="absolute left-1/2 top-1/2 h-[70vw] w-[70vw] max-h-[800px] max-w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,33,71,0.07),transparent_65%)]" />
 
-        <div className="absolute left-0 top-1/2 h-px w-full bg-[var(--color-cyan)]/10" />
+        <div className="absolute left-0 top-1/2 h-px w-full bg-[var(--color-primary)]/10" />
 
-        <div className="absolute left-1/2 top-0 h-full w-px bg-[var(--color-red)]/10" />
+        <div className="absolute left-1/2 top-0 h-full w-px bg-[var(--color-accent)]/10" />
 
-        <div className="absolute left-0 top-[22%] h-px w-[35%] bg-gradient-to-r from-transparent via-[var(--color-cyan)]/40 to-transparent" />
+        <div className="absolute left-0 top-[22%] h-px w-[35%] bg-gradient-to-r from-transparent via-[var(--color-primary)]/40 to-transparent" />
 
-        <div className="absolute bottom-[22%] right-0 h-px w-[35%] bg-gradient-to-r from-transparent via-[var(--color-red)]/40 to-transparent" />
+        <div className="absolute bottom-[22%] right-0 h-px w-[35%] bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
       </div>
 
       {/* Corner markers */}
-      <div className="pointer-events-none absolute left-6 top-6 h-8 w-8 border-l border-t border-[var(--color-cyan)]/40 md:left-10 md:top-10" />
+      <div className="pointer-events-none absolute left-6 top-6 h-8 w-8 border-l border-t border-[var(--color-primary)]/40 md:left-10 md:top-10" />
 
-      <div className="pointer-events-none absolute right-6 top-6 h-8 w-8 border-r border-t border-[var(--color-cyan)]/40 md:right-10 md:top-10" />
+      <div className="pointer-events-none absolute right-6 top-6 h-8 w-8 border-r border-t border-[var(--color-primary)]/40 md:right-10 md:top-10" />
 
-      <div className="pointer-events-none absolute bottom-6 left-6 h-8 w-8 border-b border-l border-[var(--color-red)]/40 md:bottom-10 md:left-10" />
+      <div className="pointer-events-none absolute bottom-6 left-6 h-8 w-8 border-b border-l border-[var(--color-accent)]/40 md:bottom-10 md:left-10" />
 
-      <div className="pointer-events-none absolute bottom-6 right-6 h-8 w-8 border-b border-r border-[var(--color-red)]/40 md:bottom-10 md:right-10" />
+      <div className="pointer-events-none absolute bottom-6 right-6 h-8 w-8 border-b border-r border-[var(--color-accent)]/40 md:bottom-10 md:right-10" />
 
       {/* Main */}
       <div className="relative z-10 w-full max-w-5xl">
         <div
           data-404-item
-          className="portfolio-mono mb-8 flex items-center gap-4 text-[9px] tracking-[0.22em] text-[var(--color-cyan)]"
+          className="portfolio-mono mb-8 flex items-center gap-4 text-[9px] tracking-[0.22em] text-[var(--color-primary)]"
         >
-          <span className="h-px w-12 bg-[var(--color-red)]" />
+          <span className="h-px w-12 bg-[var(--color-accent)]" />
           E-FOLIO // DIMENSION ERROR
         </div>
 
@@ -94,12 +94,12 @@ export default function NotFound() {
               data-404-glitch
               className="portfolio-display text-[clamp(8rem,22vw,18rem)] font-black leading-[0.7] tracking-[-0.09em]"
             >
-              404<span className="text-[var(--color-red)]">.</span>
+              404<span className="text-[var(--color-accent)]">.</span>
             </div>
 
             <div
               data-404-item
-              className="mt-10 border-l border-[var(--color-cyan)]/40 pl-6"
+              className="mt-10 border-l border-[var(--color-primary)]/40 pl-6"
             >
               <h1 className="portfolio-display text-3xl font-black uppercase tracking-[-0.04em] md:text-5xl">
                 WRONG
@@ -116,13 +116,13 @@ export default function NotFound() {
 
           {/* Diagnostic panel */}
           <div data-404-item>
-            <div className="border border-[var(--color-cyan)]/20 bg-[var(--color-panel)]/50 backdrop-blur-sm">
+            <div className="border border-[var(--color-primary)]/20 bg-[var(--color-panel)]/50 backdrop-blur-sm">
               <div className="flex items-center justify-between border-b border-[var(--color-white)]/10 px-5 py-4">
-                <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-cyan)]">
+                <span className="portfolio-mono text-[8px] tracking-[0.18em] text-[var(--color-primary)]">
                   NAVIGATION DIAGNOSTIC
                 </span>
 
-                <span className="portfolio-mono text-[8px] text-[var(--color-red)]">
+                <span className="portfolio-mono text-[8px] text-[var(--color-accent)]">
                   ERROR
                 </span>
               </div>
@@ -133,7 +133,7 @@ export default function NotFound() {
                     STATUS
                   </p>
 
-                  <p className="portfolio-mono mt-2 text-[10px] text-[var(--color-red)]">
+                  <p className="portfolio-mono mt-2 text-[10px] text-[var(--color-accent)]">
                     COORDINATE NOT FOUND
                   </p>
                 </div>
@@ -153,7 +153,7 @@ export default function NotFound() {
                     RECOVERY
                   </p>
 
-                  <p className="portfolio-mono mt-2 text-[10px] text-[var(--color-cyan)]">
+                  <p className="portfolio-mono mt-2 text-[10px] text-[var(--color-primary)]">
                     RETURN TO KNOWN SPACE
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export default function NotFound() {
               <div className="border-t border-[var(--color-white)]/10 p-5">
                 <Link
                   href="/sde"
-                  className="portfolio-mono inline-flex border border-[var(--color-cyan)]/50 px-6 py-3 text-[9px] tracking-[0.14em] transition-all duration-300 hover:bg-[var(--color-cyan)] hover:text-[var(--color-void)]"
+                  className="portfolio-mono inline-flex border border-[var(--color-primary)]/50 px-6 py-3 text-[9px] tracking-[0.14em] transition-all duration-300 hover:bg-[var(--color-primary)] hover:text-[var(--color-void)]"
                 >
                   RETURN TO PORTFOLIO →
                 </Link>

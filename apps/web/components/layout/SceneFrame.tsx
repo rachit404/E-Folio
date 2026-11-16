@@ -91,12 +91,12 @@ export default function SceneFrame({
             visible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"
           }`}
         >
-          <span className="portfolio-mono text-[10px] text-[var(--color-cyan)]">
+          <span className="portfolio-mono text-[10px] text-[var(--color-primary)]">
             {number}
           </span>
 
           <span
-            className={`h-px bg-[var(--color-red)] transition-all duration-700 delay-200 ${
+            className={`h-px bg-[var(--color-accent)] transition-all duration-700 delay-200 ${
               visible ? "w-8" : "w-0"
             }`}
           />

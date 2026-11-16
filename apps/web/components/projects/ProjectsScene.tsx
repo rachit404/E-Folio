@@ -76,24 +76,24 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
     >
       <section className="relative overflow-hidden py-16 md:py-24">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[8%] top-[15%] h-px w-[32%] bg-[var(--color-cyan)]/20" />
-          <div className="absolute right-[8%] top-[28%] h-px w-[24%] bg-[var(--color-red)]/20" />
+          <div className="absolute left-[8%] top-[15%] h-px w-[32%] bg-[var(--color-primary)]/20" />
+          <div className="absolute right-[8%] top-[28%] h-px w-[24%] bg-[var(--color-accent)]/20" />
 
-          <div className="absolute bottom-[15%] right-[10%] h-40 w-40 border border-[var(--color-cyan)]/[0.06]" />
-          <div className="absolute bottom-[18%] right-[13%] h-24 w-24 border border-[var(--color-red)]/[0.06]" />
+          <div className="absolute bottom-[15%] right-[10%] h-40 w-40 border border-[var(--color-primary)]/[0.06]" />
+          <div className="absolute bottom-[18%] right-[13%] h-24 w-24 border border-[var(--color-accent)]/[0.06]" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
           <div className="mb-14 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-cyan)]">
+              <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
                 ARTIFACT ARCHIVE // 03
               </p>
 
               <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black uppercase leading-[0.82] tracking-[-0.06em]">
                 SELECTED
                 <br />
-                <span className="text-[var(--color-red)]">WORK</span>
+                <span className="text-[var(--color-accent)]">WORK</span>
               </h2>
 
               <p className="mt-8 max-w-xl text-sm leading-7 text-[var(--color-muted)] md:text-base">
@@ -107,7 +107,7 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
                 AVAILABLE ARTIFACTS
               </span>
 
-              <span className="portfolio-display mt-2 block text-4xl font-bold text-[var(--color-cyan)]">
+              <span className="portfolio-display mt-2 block text-4xl font-bold text-[var(--color-primary)]">
                 {String(projects.length).padStart(2, "0")}
               </span>
             </div>
@@ -120,7 +120,7 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
               PROJECT SYSTEM / ONLINE
             </span>
 
-            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-cyan)]">
+            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)]">
               SELECT / INSPECT
             </span>
           </div>
