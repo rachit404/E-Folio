@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import gsap from "gsap";
 
@@ -272,7 +273,22 @@ export default function ProjectCaseStudy({
     };
   }, []);
 
-  return (
+  /*
+   * Render into the theme root instead of in place: SceneFrame's
+   * wrapper uses CSS translate/scale transitions, which would become
+   * the containing block of this fixed overlay and clip it. The theme
+   * root still provides the colour and comic CSS variables.
+   */
+  const portalTarget =
+    typeof document === "undefined"
+      ? null
+      : (document.querySelector<HTMLElement>("[data-theme]") ?? document.body);
+
+  if (!portalTarget) {
+    return null;
+  }
+
+  return createPortal(
     <div
       ref={rootRef}
       data-native-scroll
@@ -308,13 +324,13 @@ export default function ProjectCaseStudy({
           >
             <div className="flex items-center gap-4">
               <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
-                CASE STUDY
+                CASE FILE
               </span>
 
               <span className="h-px w-8 bg-[var(--color-accent)]" />
 
               <span className="portfolio-mono text-[8px] text-[var(--color-dim)]">
-                ARTIFACT {String(index + 1).padStart(2, "0")}
+                ISSUE #{String(index + 1).padStart(2, "0")}
               </span>
             </div>
 
@@ -322,7 +338,7 @@ export default function ProjectCaseStudy({
               ref={closeButtonRef}
               type="button"
               onClick={handleClose}
-              className="portfolio-mono flex items-center gap-3 border border-[var(--color-white)]/10 px-4 py-3 text-[8px] tracking-[0.14em] text-[var(--color-white)] transition-all hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] focus:border-[var(--color-primary)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/40"
+              className="portfolio-mono flex items-center gap-3 border-2 border-[var(--comic-ink)] px-4 py-3 text-[8px] font-bold tracking-[0.14em] text-[var(--color-white)] transition-all hover:bg-[var(--color-accent)] hover:text-[var(--color-void)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
               aria-label="Close project case study"
             >
               CLOSE
@@ -332,18 +348,18 @@ export default function ProjectCaseStudy({
 
           {/* Main identity */}
           <div className="grid gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
-            <div>
+            <div className="comic-panel min-w-0 self-start p-8 md:p-10">
               <p
                 data-case-label
                 className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-accent)]"
               >
-                PROJECT RECORD / VERIFIED
+                SPECIAL ISSUE // CASE FILE
               </p>
 
               <h1
                 id="project-case-study-title"
                 data-case-title
-                className="portfolio-display mt-7 max-w-5xl text-[clamp(3.5rem,8vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.06em] text-[var(--color-white)]"
+                className="portfolio-display mt-7 max-w-5xl break-words text-[clamp(2.25rem,5.2vw,5.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-[var(--color-white)]"
               >
                 {project.name}
               </h1>
@@ -382,7 +398,7 @@ export default function ProjectCaseStudy({
             {/* Artifact visualizer */}
             <div
               data-case-visual
-              className="relative min-h-[340px] overflow-hidden border border-[var(--color-primary)]/20 bg-[var(--color-panel)]/30"
+              className="comic-panel relative min-h-[340px] overflow-hidden"
             >
               <div className="absolute inset-5 border border-[var(--color-white)]/5" />
 
@@ -433,33 +449,31 @@ export default function ProjectCaseStudy({
           >
             <div>
               <p className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
-                IMPLEMENTATION LOG
+                THE STORY SO FAR
               </p>
 
               <p className="mt-4 max-w-xs text-sm leading-6 text-[var(--color-muted)]">
-                Engineering details extracted directly from the active portfolio
-                source.
+                What was built, chapter by chapter.
               </p>
             </div>
 
-            <div className="border-t border-[var(--color-white)]/10">
+            <div>
               {project.details.length > 0 ? (
-                <ul>
+                <ul className="grid gap-6 md:grid-cols-2">
                   {project.details.map((detail, detailIndex) => (
                     <li
                       key={`${detail}-${detailIndex}`}
                       data-case-detail
-                      className="group flex gap-5 border-b border-[var(--color-white)]/10 py-6"
+                      className="comic-panel group relative p-6 pt-8 md:first:col-span-2"
                     >
-                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-accent)]">
-                        {String(detailIndex + 1).padStart(2, "0")}
+                      <span className="comic-caption absolute -top-3 left-4 z-10">
+                        {`CH. ${String(detailIndex + 1).padStart(2, "0")}`}
                       </span>
 
-                      <span className="max-w-3xl text-sm leading-7 text-[var(--color-muted)] transition-colors group-hover:text-[var(--color-white)] md:text-base">
+                      <span className="relative z-10 block max-w-3xl text-sm leading-7 text-[var(--color-muted)] transition-colors group-hover:text-[var(--color-white)] md:text-base">
                         {detail}
                       </span>
 
-                      <span className="ml-auto mt-2 hidden h-1 w-1 shrink-0 bg-[var(--color-primary)] opacity-0 transition-opacity group-hover:opacity-100 sm:block" />
                     </li>
                   ))}
                 </ul>
@@ -480,7 +494,7 @@ export default function ProjectCaseStudy({
           >
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                EXTERNAL TRANSMISSIONS
+                READ MORE ONLINE
               </span>
 
               <div className="flex flex-wrap gap-3">
@@ -491,7 +505,7 @@ export default function ProjectCaseStudy({
                       href={link.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="portfolio-mono inline-flex items-center gap-4 border border-[var(--color-primary)]/20 px-5 py-3 text-[8px] tracking-[0.14em] text-[var(--color-primary)] transition-all hover:border-[var(--color-primary)]/60 hover:bg-[var(--color-primary)]/[0.04] focus:border-[var(--color-primary)]/60 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/30"
+                      className="comic-chip inline-flex items-center gap-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                     >
                       {link.label.toUpperCase()}
                       <span>↗</span>
@@ -524,6 +538,7 @@ export default function ProjectCaseStudy({
           <div className="h-24" />
         </div>
       </div>
-    </div>
+    </div>,
+    portalTarget,
   );
 }

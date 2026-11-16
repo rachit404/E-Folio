@@ -1,5 +1,3 @@
-"use client";
-
 import type { PortfolioData } from "@/content/schema/portfolio";
 
 import ComicPage from "@/components/comic/ComicPage";

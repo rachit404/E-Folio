@@ -276,7 +276,7 @@ export default function ProjectCarousel({
 
                 selectIndex(index);
               }}
-              className="absolute left-1/2 top-1/2 h-[340px] w-[min(78vw,460px)] -translate-x-1/2 -translate-y-1/2 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+              className="absolute left-1/2 top-1/2 h-[340px] w-[min(78vw,460px)] text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
               style={{
                 transform: `
                     translate(-50%, -50%)
@@ -294,44 +294,42 @@ export default function ProjectCarousel({
             >
               <article
                 className={[
-                  "relative flex h-full flex-col overflow-hidden",
-                  "border border-white/15",
-                  "bg-black/70 backdrop-blur-xl",
-                  "shadow-[0_30px_100px_rgba(0,0,0,0.55)]",
-                  "transition-colors duration-300",
-                  isActive ? "border-[var(--color-primary)]/50" : "hover:border-white/30",
+                  "comic-panel relative flex h-full flex-col overflow-hidden",
+                  "transition-[box-shadow,transform] duration-300",
+                  isActive
+                    ? "[--comic-shadow:var(--color-primary)]"
+                    : "[--comic-shadow-offset:4px]",
                 ].join(" ")}
               >
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-primary)_8%,transparent),transparent_40%,color-mix(in_srgb,var(--color-accent)_6%,transparent))]" />
+                <div className="relative z-10 flex items-center justify-between border-b-[length:var(--comic-border)] border-[var(--comic-ink)] bg-[var(--color-accent)] px-5 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--color-void)]">
+                  <span>Issue #{String(index + 1).padStart(2, "0")}</span>
 
-                <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.28em] text-white/45">
-                  <span>Artifact {String(index + 1).padStart(2, "0")}</span>
-
-                  <span>{isActive ? "Focused" : "Archive"}</span>
+                  <span>{isActive ? "Now reading" : "Archive"}</span>
                 </div>
 
-                <div className="relative flex flex-1 flex-col p-6">
-                  <div className="mb-5">
-                    <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--color-primary)]/70">
+                <div className="relative z-10 flex flex-1 flex-col p-6">
+                  {project.metadata.primary && (
+                    <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--color-primary)]">
                       {project.metadata.primary}
                     </p>
+                  )}
 
-                    <h3 className="text-2xl font-semibold tracking-tight text-white">
-                      {project.name}
-                    </h3>
-                  </div>
+                  <h3 className="portfolio-display text-3xl font-black leading-[0.95] tracking-tight text-[var(--color-white)]">
+                    {project.name}
+                  </h3>
 
-                  <p className="max-w-xl text-sm leading-6 text-white/60">
+                  <p className="mt-4 max-w-xl text-sm leading-6 text-[var(--color-muted)]">
                     {project.description}
                   </p>
 
                   <div className="mt-auto flex items-end justify-between gap-4 pt-6">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-                      {project.metadata.secondary}
+                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-dim)]">
+                      {project.metadata.secondary ||
+                        `${project.details.length} chapters`}
                     </span>
 
-                    <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-primary)]/70">
-                      {isActive ? "Enter / Click" : "Select"}
+                    <span className="comic-caption">
+                      {isActive ? "Read issue →" : "Select"}
                     </span>
                   </div>
                 </div>
@@ -347,7 +345,7 @@ export default function ProjectCarousel({
             type="button"
             onClick={() => rotate(-1)}
             aria-label="Previous project"
-            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-[var(--color-primary)]/50 hover:text-[var(--color-primary)]"
+            className="border-2 border-[var(--comic-ink)] px-4 py-2 font-mono text-xs font-bold text-[var(--color-white)] transition hover:bg-[var(--color-primary)] hover:text-[var(--color-void)]"
           >
             ←
           </button>
@@ -374,7 +372,7 @@ export default function ProjectCarousel({
             type="button"
             onClick={() => rotate(1)}
             aria-label="Next project"
-            className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 transition hover:border-[var(--color-primary)]/50 hover:text-[var(--color-primary)]"
+            className="border-2 border-[var(--comic-ink)] px-4 py-2 font-mono text-xs font-bold text-[var(--color-white)] transition hover:bg-[var(--color-primary)] hover:text-[var(--color-void)]"
           >
             →
           </button>

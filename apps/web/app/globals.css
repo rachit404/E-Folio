@@ -191,3 +191,28 @@ a {
   text-shadow: 4px 4px 0 var(--color-accent);
   transform: rotate(-8deg);
 }
+
+/* Skill / tag chip inside a comic panel. */
+.comic-chip {
+  display: inline-block;
+  border: 2px solid var(--comic-ink);
+  background: color-mix(in srgb, var(--color-void) 70%, transparent);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  box-shadow: 3px 3px 0 var(--color-primary);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.comic-chip:hover {
+  transform: translate(-2px, -2px);
+  background: var(--color-primary);
+  color: var(--color-void);
+}
