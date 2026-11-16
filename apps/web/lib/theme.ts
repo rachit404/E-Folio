@@ -53,6 +53,37 @@ const MascotSchema = z.object({
 });
 
 /**
+ * Comic-panel look and motion. Every value has a default, so a
+ * preset may omit this block or override just a few fields.
+ * Colour values are plain CSS, so presets can reference theme
+ * tokens, e.g. "var(--color-accent)".
+ */
+export const ComicSchema = z.object({
+  /** Panel outline colour. */
+  ink: z.string().default("var(--color-white)"),
+  /** Hard offset shadow colour behind each panel. */
+  shadow: z.string().default("var(--color-accent)"),
+  /** Outline thickness in px. */
+  borderWidth: z.number().min(0).default(3),
+  /** Hard shadow offset in px. */
+  shadowOffset: z.number().min(0).default(8),
+  /** Gap between panels in px. */
+  gutter: z.number().min(0).default(20),
+  /** Halftone dot overlay strength, 0 to 1. */
+  halftone: z.number().min(0).max(1).default(0.1),
+  /** How panels play in as the page scrolls. */
+  reveal: z
+    .object({
+      style: z.enum(["pop", "wipe", "slide"]).default("pop"),
+      /** Seconds of scroll smoothing; 0 locks frames to the scrollbar. */
+      scrub: z.number().min(0).default(0.4),
+    })
+    .prefault({}),
+  /** Onomatopoeia per section id, e.g. { experience: "THWIP!" }. */
+  sfx: z.record(z.string(), z.string()).default({}),
+});
+
+/**
  * One visual preset (Spider-Man, Hulk, ...).
  */
 const PresetSchema = z.object({
@@ -65,6 +96,7 @@ const PresetSchema = z.object({
   }),
   world: WorldSchema.optional(),
   mascot: MascotSchema.optional(),
+  comic: ComicSchema.prefault({}),
 });
 
 /**
@@ -121,6 +153,8 @@ export interface PortfolioTheme {
   world?: z.infer<typeof WorldSchema>;
 
   mascot?: z.infer<typeof MascotSchema>;
+
+  comic: z.infer<typeof ComicSchema>;
 }
 
 /**

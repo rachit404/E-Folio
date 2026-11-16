@@ -1,159 +1,65 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
 import type { PortfolioData } from "@/content/schema/portfolio";
-import SceneFrame from "@/components/layout/SceneFrame";
 
-gsap.registerPlugin(ScrollTrigger);
+import ComicPage from "@/components/comic/ComicPage";
+import { ComicBeat, ComicPanel } from "@/components/comic/ComicPanel";
+import { panelSpans } from "@/components/comic/layout";
+import SceneFrame from "@/components/layout/SceneFrame";
 
 interface ExperienceSceneProps {
   portfolio: PortfolioData;
 }
 
+type Item = PortfolioData["sections"][number]["items"][number];
+
+interface TimelineItem {
+  organization: string;
+  secondary: string;
+  role: string;
+  dates: string;
+  details: string[];
+}
+
+interface PositionItem {
+  title: string;
+  organization: string;
+  dates: string;
+}
+
+function isTimelineItem(item: Item): item is TimelineItem {
+  return (
+    "organization" in item &&
+    "role" in item &&
+    "dates" in item &&
+    "details" in item
+  );
+}
+
+function isPositionItem(item: Item): item is PositionItem {
+  return "title" in item && "organization" in item && "dates" in item;
+}
+
 export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
-  const sceneRef = useRef<HTMLDivElement>(null);
+  const timelineSections = portfolio.sections
+    .filter((section) => section.kind === "timeline")
+    .map((section) => ({
+      heading: section.heading,
+      items: section.items.filter(isTimelineItem),
+    }))
+    .filter((section) => section.items.length > 0);
 
-  const timelineSections = portfolio.sections.filter(
-    (section) => section.kind === "timeline" || section.kind === "positions",
-  );
+  const positions = portfolio.sections
+    .filter((section) => section.kind === "positions")
+    .flatMap((section) => section.items.filter(isPositionItem));
 
-  const timelineEntries = timelineSections.filter(
-    (section) => section.kind === "timeline",
-  );
+  const hasRecords = timelineSections.length > 0 || positions.length > 0;
 
-  const positionEntries = timelineSections.filter(
-    (section) => section.kind === "positions",
-  );
-
-  useEffect(() => {
-    const root = sceneRef.current;
-
-    if (!root) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    const context = gsap.context(() => {
-      const trigger = {
-        trigger: root,
-        start: "top 72%",
-        once: true,
-      };
-
-      const animate = (
-        selector: string,
-        from: gsap.TweenVars,
-        to: gsap.TweenVars,
-      ) => {
-        const elements = root.querySelectorAll(selector);
-
-        if (!elements.length) return;
-
-        gsap.fromTo(elements, from, {
-          ...to,
-          scrollTrigger: trigger,
-        });
-      };
-
-      animate(
-        "[data-experience-header]",
-        {
-          opacity: 0,
-          x: -35,
-        },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.75,
-          ease: "power3.out",
-        },
-      );
-
-      animate(
-        "[data-experience-rail]",
-        {
-          scaleY: 0,
-          transformOrigin: "top",
-        },
-        {
-          scaleY: 1,
-          duration: 1.4,
-          delay: 0.2,
-          ease: "power3.inOut",
-        },
-      );
-
-      animate(
-        "[data-experience-entry]",
-        {
-          opacity: 0,
-          x: 55,
-        },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.75,
-          stagger: 0.18,
-          delay: 0.35,
-          ease: "power3.out",
-        },
-      );
-
-      animate(
-        "[data-experience-node]",
-        {
-          opacity: 0,
-          scale: 0,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.45,
-          stagger: 0.18,
-          delay: 0.45,
-          ease: "back.out(1.7)",
-        },
-      );
-
-      animate(
-        "[data-experience-detail]",
-        {
-          opacity: 0,
-          y: 15,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.05,
-          delay: 0.65,
-          ease: "power2.out",
-        },
-      );
-
-      animate(
-        "[data-position-entry]",
-        {
-          opacity: 0,
-          y: 30,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.65,
-          stagger: 0.12,
-          delay: 0.75,
-          ease: "power3.out",
-        },
-      );
-    }, root);
-
-    return () => context.revert();
-  }, []);
+  /*
+   * Sections are numbered continuously ("ISSUE 02 / PAGE 1", ...),
+   * one comic page per resume section (Education, Experience, ...).
+   */
+  const pageCount = timelineSections.length + (positions.length ? 1 : 0);
 
   return (
     <SceneFrame
@@ -162,221 +68,163 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
       label="JOURNEY / EXPERIENCE"
       className="min-h-screen"
     >
-      <div ref={sceneRef}>
-        <section className="relative overflow-hidden py-24 md:py-32">
-          <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
-            <div
-              data-experience-header
-              className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end"
-            >
-              <div>
-                <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
-                  CAREER LOG // 02
-                </p>
+      <section className="relative overflow-hidden py-24 md:py-32">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+          <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <p className="portfolio-mono mb-4 text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
+                CAREER LOG // 02
+              </p>
 
-                <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.82] tracking-[-0.06em]">
-                  FIELD
-                  <br />
-                  <span className="text-[var(--color-accent)]">RECORDS</span>
-                </h2>
-              </div>
-
-              <div className="max-w-sm">
-                <p className="text-sm leading-6 text-[var(--color-muted)] md:text-base">
-                  A chronological record of engineering work, internships, roles
-                  and technical environments.
-                </p>
-              </div>
+              <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.82] tracking-[-0.06em]">
+                FIELD
+                <br />
+                <span className="text-[var(--color-accent)]">RECORDS</span>
+              </h2>
             </div>
 
-            {timelineEntries.length > 0 && (
-              <div className="relative">
-                <div
-                  data-experience-rail
-                  className="absolute bottom-0 left-[11px] top-0 w-px bg-gradient-to-b from-[var(--color-primary)] via-[var(--color-primary)]/30 to-transparent md:left-[15px]"
-                />
-
-                <div className="space-y-10 md:space-y-14">
-                  {timelineEntries.flatMap((section) =>
-                    section.items.map((item, itemIndex) => {
-                      if (
-                        !(
-                          "organization" in item &&
-                          "role" in item &&
-                          "dates" in item &&
-                          "details" in item
-                        )
-                      ) {
-                        return null;
-                      }
-
-                      return (
-                        <article
-                          key={`${section.heading}-${itemIndex}`}
-                          data-experience-entry
-                          className="relative pl-10 md:pl-16"
-                        >
-                          <div
-                            data-experience-node
-                            className="absolute left-[5px] top-2 flex h-3 w-3 items-center justify-center rounded-full border border-[var(--color-primary)] bg-[var(--color-void)] md:left-[9px]"
-                          >
-                            <span className="h-1 w-1 rounded-full bg-[var(--color-primary)]" />
-                          </div>
-
-                          <div className="group relative overflow-hidden border border-white/10 bg-[var(--color-panel)]/30 p-6 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-panel)]/50 md:p-8">
-                            <div className="pointer-events-none absolute right-0 top-0 h-px w-0 bg-[var(--color-primary)] transition-all duration-500 group-hover:w-full" />
-
-                            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-                              <div>
-                                <p
-                                  data-experience-detail
-                                  className="portfolio-mono mb-2 text-[8px] tracking-[0.16em] text-[var(--color-primary)]"
-                                >
-                                  {section.heading}
-                                </p>
-
-                                <h3
-                                  data-experience-detail
-                                  className="portfolio-display text-2xl font-bold tracking-tight text-[var(--color-white)] md:text-3xl"
-                                >
-                                  {item.organization}
-                                </h3>
-
-                                <p
-                                  data-experience-detail
-                                  className="mt-2 text-sm text-[var(--color-accent)]"
-                                >
-                                  {item.role}
-                                </p>
-                              </div>
-
-                              <span
-                                data-experience-detail
-                                className="portfolio-mono shrink-0 border border-white/10 px-3 py-2 text-[8px] tracking-[0.12em] text-[var(--color-muted)]"
-                              >
-                                {item.dates}
-                              </span>
-                            </div>
-
-                            {item.secondary && (
-                              <p
-                                data-experience-detail
-                                className="mt-5 text-xs text-[var(--color-dim)]"
-                              >
-                                {item.secondary}
-                              </p>
-                            )}
-
-                            {item.details.length > 0 && (
-                              <div className="mt-7 border-t border-white/10 pt-6">
-                                <ul className="space-y-3">
-                                  {item.details.map((detail, detailIndex) => (
-                                    <li
-                                      key={`${detail}-${detailIndex}`}
-                                      data-experience-detail
-                                      className="flex gap-4 text-sm leading-6 text-[var(--color-muted)]"
-                                    >
-                                      <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-primary)]">
-                                        {String(detailIndex + 1).padStart(
-                                          2,
-                                          "0",
-                                        )}
-                                      </span>
-
-                                      <span>{detail}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
-                        </article>
-                      );
-                    }),
-                  )}
-                </div>
-              </div>
-            )}
-
-            {positionEntries.length > 0 && (
-              <div className="mt-24">
-                <div className="mb-8 flex items-center gap-4">
-                  <span className="portfolio-mono text-[9px] tracking-[0.18em] text-[var(--color-primary)]">
-                    ADDITIONAL RECORDS
-                  </span>
-
-                  <span className="h-px flex-1 bg-white/10" />
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  {positionEntries.flatMap((section) =>
-                    section.items.map((item, itemIndex) => {
-                      if (
-                        !(
-                          "title" in item &&
-                          "organization" in item &&
-                          "dates" in item
-                        )
-                      ) {
-                        return null;
-                      }
-
-                      return (
-                        <article
-                          key={`${section.heading}-${itemIndex}`}
-                          data-position-entry
-                          className="group relative border border-white/10 bg-[var(--color-panel)]/20 p-6 transition-all duration-500 hover:border-[var(--color-accent)]/30 hover:bg-[var(--color-panel)]/40"
-                        >
-                          <div className="mb-6 flex items-center justify-between">
-                            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                              POSITION
-                            </span>
-
-                            <span className="h-1.5 w-1.5 bg-[var(--color-accent)] opacity-50 transition-opacity group-hover:opacity-100" />
-                          </div>
-
-                          <h3 className="portfolio-display text-xl font-bold text-[var(--color-white)] md:text-2xl">
-                            {item.title}
-                          </h3>
-
-                          <p className="mt-2 text-sm text-[var(--color-accent)]">
-                            {item.organization}
-                          </p>
-
-                          <p className="portfolio-mono mt-5 text-[8px] tracking-[0.12em] text-[var(--color-muted)]">
-                            {item.dates}
-                          </p>
-                        </article>
-                      );
-                    }),
-                  )}
-                </div>
-              </div>
-            )}
-
-            {timelineEntries.length === 0 && positionEntries.length === 0 && (
-              <div className="border border-dashed border-white/10 p-10 text-center">
-                <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
-                  NO EXPERIENCE RECORDS AVAILABLE
-                </p>
-              </div>
-            )}
-
-            <div className="mt-20 flex items-center justify-between border-t border-white/10 pt-6">
-              <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
-                END OF RECORD
-              </span>
-
-              <a
-                href="#skills"
-                className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] transition-colors hover:text-[var(--color-white)]"
-              >
-                SKILLS →
-              </a>
+            <div className="max-w-sm">
+              <p className="text-sm leading-6 text-[var(--color-muted)] md:text-base">
+                A chronological record of engineering work, internships, roles
+                and technical environments.
+              </p>
             </div>
           </div>
-        </section>
-      </div>
+
+          <div className="space-y-24">
+            {timelineSections.map((section, sectionIndex) => {
+              const spans = panelSpans(section.items.length);
+
+              return (
+                <div key={section.heading}>
+                  <ComicPage
+                    sceneId="experience"
+                    showSfx={sectionIndex === 0}
+                    issue={`PAGE ${sectionIndex + 1}/${pageCount} // ${section.heading.toUpperCase()}`}
+                  >
+                    {section.items.map((item, itemIndex) => (
+                      <ComicPanel
+                        key={`${section.heading}-${itemIndex}`}
+                        caption={item.dates}
+                        wide={spans[itemIndex]}
+                      >
+                        <ComicBeat
+                          as="p"
+                          className="portfolio-mono mb-3 text-[8px] tracking-[0.16em] text-[var(--color-primary)]"
+                        >
+                          {`${String(itemIndex + 1).padStart(2, "0")} // ${section.heading}`}
+                        </ComicBeat>
+
+                        <ComicBeat
+                          as="h3"
+                          className="portfolio-display text-2xl font-black tracking-tight text-[var(--color-white)] md:text-3xl"
+                        >
+                          {item.organization}
+                        </ComicBeat>
+
+                        <ComicBeat
+                          as="p"
+                          className="mt-2 text-sm font-semibold text-[var(--color-accent)]"
+                        >
+                          {item.role}
+                        </ComicBeat>
+
+                        {item.secondary && (
+                          <ComicBeat
+                            as="p"
+                            className="mt-3 text-xs text-[var(--color-dim)]"
+                          >
+                            {item.secondary}
+                          </ComicBeat>
+                        )}
+
+                        {item.details.length > 0 && (
+                          <ul className="mt-6 space-y-3 border-t-2 border-dashed border-white/15 pt-5">
+                            {item.details.map((detail, detailIndex) => (
+                              <ComicBeat
+                                as="li"
+                                key={`${detail}-${detailIndex}`}
+                                className="flex gap-4 text-sm leading-6 text-[var(--color-muted)]"
+                              >
+                                <span className="portfolio-mono shrink-0 text-[8px] text-[var(--color-primary)]">
+                                  {String(detailIndex + 1).padStart(2, "0")}
+                                </span>
+
+                                <span>{detail}</span>
+                              </ComicBeat>
+                            ))}
+                          </ul>
+                        )}
+                      </ComicPanel>
+                    ))}
+                  </ComicPage>
+                </div>
+              );
+            })}
+
+            {positions.length > 0 && (
+              <ComicPage
+                sceneId="experience"
+                showSfx={false}
+                issue={`PAGE ${pageCount}/${pageCount} // ADDITIONAL RECORDS`}
+              >
+                {positions.map((position, index) => (
+                  <ComicPanel key={`${position.title}-${index}`}>
+                    <ComicBeat
+                      as="p"
+                      className="portfolio-mono mb-5 text-[8px] tracking-[0.16em] text-[var(--color-dim)]"
+                    >
+                      POSITION
+                    </ComicBeat>
+
+                    <ComicBeat
+                      as="h3"
+                      className="portfolio-display text-xl font-black text-[var(--color-white)] md:text-2xl"
+                    >
+                      {position.title}
+                    </ComicBeat>
+
+                    <ComicBeat
+                      as="p"
+                      className="mt-2 text-sm text-[var(--color-accent)]"
+                    >
+                      {position.organization}
+                    </ComicBeat>
+
+                    <ComicBeat
+                      as="p"
+                      className="portfolio-mono mt-5 text-[8px] tracking-[0.12em] text-[var(--color-muted)]"
+                    >
+                      {position.dates}
+                    </ComicBeat>
+                  </ComicPanel>
+                ))}
+              </ComicPage>
+            )}
+          </div>
+
+          {!hasRecords && (
+            <div className="border border-dashed border-white/10 p-10 text-center">
+              <p className="portfolio-mono text-[9px] tracking-[0.16em] text-[var(--color-dim)]">
+                NO EXPERIENCE RECORDS AVAILABLE
+              </p>
+            </div>
+          )}
+
+          <div className="mt-20 flex items-center justify-between border-t border-white/10 pt-6">
+            <span className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-dim)]">
+              END OF RECORD
+            </span>
+
+            <a
+              href="#skills"
+              className="portfolio-mono text-[8px] tracking-[0.16em] text-[var(--color-primary)] transition-colors hover:text-[var(--color-white)]"
+            >
+              SKILLS →
+            </a>
+          </div>
+        </div>
+      </section>
     </SceneFrame>
   );
 }

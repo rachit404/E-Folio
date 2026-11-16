@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import PortfolioNav from "@/components/navigation/PortfolioNav";
 import ResetHashOnReload from "@/components/navigation/ResetHashOnReload";
 import ThemeRoot from "@/components/layout/ThemeRoot";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import type { PortfolioTheme } from "@/lib/theme";
 
@@ -21,6 +22,7 @@ export default function PortfolioShell({
 }: PortfolioShellProps) {
   return (
     <ThemeRoot theme={theme}>
+      <ThemeProvider theme={theme}>
       <SmoothScroll>
         <ResetHashOnReload />
 
@@ -38,6 +40,7 @@ export default function PortfolioShell({
           <main>{children}</main>
         </div>
       </SmoothScroll>
+      </ThemeProvider>
     </ThemeRoot>
   );
 }

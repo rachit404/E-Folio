@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { PortfolioTheme } from "./theme";
+import { ComicSchema, type PortfolioTheme } from "./theme";
 import { WORLD_CONFIGS, getWorldConfig } from "./worlds";
 
 function themeWith(backgrounds?: Record<string, string>): PortfolioTheme {
@@ -28,6 +28,7 @@ function themeWith(backgrounds?: Record<string, string>): PortfolioTheme {
     },
     navigation: { showNumbers: true },
     world: backgrounds ? { backgrounds } : undefined,
+    comic: ComicSchema.parse({}),
   };
 }
 
