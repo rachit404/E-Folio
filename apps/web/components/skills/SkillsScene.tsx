@@ -40,7 +40,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
                 CAPABILITY MATRIX // 05
               </p>
 
-              <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.82] tracking-[-0.06em]">
+              <h2 className="portfolio-display text-[clamp(2.25rem,4.2vw,4.25rem)] font-black leading-[0.82] tracking-[-0.06em]">
                 ENGINEERING
                 <br />
                 <span className="text-[var(--color-accent)]">ARSENAL</span>

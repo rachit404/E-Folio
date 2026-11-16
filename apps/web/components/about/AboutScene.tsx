@@ -62,7 +62,7 @@ export default function AboutScene({ portfolio }: AboutSceneProps) {
 
               <ComicBeat
                 as="h2"
-                className="portfolio-display text-[clamp(3.5rem,8vw,8rem)] font-black leading-[0.82] tracking-[-0.06em]"
+                className="portfolio-display text-[clamp(2.25rem,4.6vw,4.5rem)] font-black leading-[0.82] tracking-[-0.06em]"
               >
                 {name}
                 <span className="text-[var(--color-accent)]">.</span>

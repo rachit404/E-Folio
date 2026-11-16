@@ -62,7 +62,7 @@ export default function ContactScene({ portfolio }: ContactSceneProps) {
 
               <ComicBeat
                 as="h2"
-                className="portfolio-display mt-7 text-[clamp(4rem,10vw,9rem)] font-black leading-[0.8] tracking-[-0.06em]"
+                className="portfolio-display mt-7 text-[clamp(2.5rem,5.2vw,5rem)] font-black leading-[0.8] tracking-[-0.06em]"
               >
                 LET&apos;S
                 <br />

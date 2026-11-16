@@ -83,6 +83,36 @@ export const ComicSchema = z.object({
   sfx: z.record(z.string(), z.string()).default({}),
 });
 
+export const GAME_IDS = ["match", "decode", "target"] as const;
+
+export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
+
+export type GameId = (typeof GAME_IDS)[number];
+
+export type Difficulty = (typeof DIFFICULTIES)[number];
+
+/**
+ * Optional mini-games that can gate a section's details.
+ *
+ * Games are theme-neutral puzzles; a preset only chooses which
+ * section gets which game and how hard it is. A section that is not
+ * listed here is never gated.
+ */
+export const GamesSchema = z.object({
+  /** Ask visitors on their first visit whether they want to play. */
+  prompt: z.boolean().default(true),
+  /** Section id -> game. */
+  sections: z
+    .record(
+      z.string(),
+      z.object({
+        game: z.enum(GAME_IDS),
+        difficulty: z.enum(DIFFICULTIES).default("easy"),
+      }),
+    )
+    .default({}),
+});
+
 /**
  * One visual preset (Spider-Man, Hulk, ...).
  */
@@ -97,6 +127,7 @@ const PresetSchema = z.object({
   world: WorldSchema.optional(),
   mascot: MascotSchema.optional(),
   comic: ComicSchema.prefault({}),
+  games: GamesSchema.prefault({}),
 });
 
 /**
@@ -155,6 +186,8 @@ export interface PortfolioTheme {
   mascot?: z.infer<typeof MascotSchema>;
 
   comic: z.infer<typeof ComicSchema>;
+
+  games: z.infer<typeof GamesSchema>;
 }
 
 /**

@@ -181,7 +181,7 @@ export default function Hero({ portfolio, theme }: HeroProps) {
 
               <h1
                 data-hero-title
-                className="portfolio-display text-[clamp(4.2rem,11vw,11rem)] font-black leading-[0.78] tracking-[-0.065em]"
+                className="portfolio-display text-[clamp(2.75rem,6vw,6rem)] font-black leading-[0.78] tracking-[-0.065em]"
               >
                 {portfolio.metadata.name}
 

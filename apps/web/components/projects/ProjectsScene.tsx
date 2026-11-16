@@ -90,7 +90,7 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
                 ARTIFACT ARCHIVE // 03
               </p>
 
-              <h2 className="portfolio-display text-[clamp(3rem,7vw,7rem)] font-black uppercase leading-[0.82] tracking-[-0.06em]">
+              <h2 className="portfolio-display text-[clamp(2.25rem,4.2vw,4.25rem)] font-black uppercase leading-[0.82] tracking-[-0.06em]">
                 SELECTED
                 <br />
                 <span className="text-[var(--color-accent)]">WORK</span>

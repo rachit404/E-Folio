@@ -15,9 +15,9 @@
   --border-subtle: rgba(0, 229, 255, 0.16);
   --border-active: rgba(0, 229, 255, 0.55);
 
-  --font-display: "Arial Narrow", Arial, sans-serif;
-  --font-body: Arial, sans-serif;
-  --font-mono: "Courier New", monospace;
+  --font-display: var(--font-brush), "Permanent Marker", "Arial Narrow", sans-serif;
+  --font-body: var(--font-sans-body), Inter, system-ui, sans-serif;
+  --font-mono: var(--font-mono-label), "JetBrains Mono", ui-monospace, monospace;
 }
 
 * {
@@ -101,7 +101,11 @@ a {
 .portfolio-display {
   font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: -0.025em;
+  /* Brush lettering needs normal spacing and line height; this unlayered
+     rule intentionally wins over the tight Tailwind tracking/leading
+     utilities that were written for a condensed sans. */
+  letter-spacing: 0.01em;
+  line-height: 1.05;
 }
 
 /* Accessibility */
@@ -215,4 +219,115 @@ a {
   transform: translate(-2px, -2px);
   background: var(--color-primary);
   color: var(--color-void);
+}
+
+/* ------------------------------------------------------------------
+ * Case files (mini-games)
+ * ------------------------------------------------------------------ */
+
+.comic-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 2px solid var(--comic-ink);
+  background: var(--color-primary);
+  color: var(--color-void);
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--color-accent);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.comic-button:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--color-accent);
+}
+
+.comic-button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-accent);
+}
+
+.comic-button:focus-visible {
+  outline: 3px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+.comic-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.comic-button--ghost {
+  background: transparent;
+  color: var(--color-white);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-white) 25%, transparent);
+}
+
+.comic-button--ghost:hover:not(:disabled) {
+  background: var(--color-white);
+  color: var(--color-void);
+}
+
+/* Redacted evidence bars on a locked case file. */
+.comic-redacted {
+  display: block;
+  height: 0.8rem;
+  background: var(--color-white);
+  opacity: 0.12;
+}
+
+@keyframes comic-enlarge {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.comic-enlarge {
+  animation: comic-enlarge 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes comic-unlock {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.comic-unlock {
+  animation: comic-unlock 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes comic-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+.comic-shake {
+  animation: comic-shake 0.3s linear 2;
 }

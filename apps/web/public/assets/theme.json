@@ -62,6 +62,23 @@
           "projects": "POW!",
           "contact": "WHOOSH!"
         }
+      },
+      "games": {
+        "prompt": true,
+        "sections": {
+          "experience": {
+            "game": "decode",
+            "difficulty": "easy"
+          },
+          "skills": {
+            "game": "match",
+            "difficulty": "easy"
+          },
+          "projects": {
+            "game": "target",
+            "difficulty": "easy"
+          }
+        }
       }
     },
     "hulk": {
@@ -114,6 +131,23 @@
           "skills": "CRACK!",
           "projects": "BOOM!",
           "contact": "STOMP!"
+        }
+      },
+      "games": {
+        "prompt": true,
+        "sections": {
+          "experience": {
+            "game": "decode",
+            "difficulty": "medium"
+          },
+          "skills": {
+            "game": "match",
+            "difficulty": "medium"
+          },
+          "projects": {
+            "game": "target",
+            "difficulty": "medium"
+          }
         }
       }
     }

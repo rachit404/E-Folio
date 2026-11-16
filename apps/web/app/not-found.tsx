@@ -92,7 +92,7 @@ export default function NotFound() {
             <div
               data-404-item
               data-404-glitch
-              className="portfolio-display text-[clamp(8rem,22vw,18rem)] font-black leading-[0.7] tracking-[-0.09em]"
+              className="portfolio-display text-[clamp(5rem,13vw,11rem)] font-black leading-[0.7] tracking-[-0.09em]"
             >
               404<span className="text-[var(--color-accent)]">.</span>
             </div>

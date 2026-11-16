@@ -359,7 +359,7 @@ export default function ProjectCaseStudy({
               <h1
                 id="project-case-study-title"
                 data-case-title
-                className="portfolio-display mt-7 max-w-5xl break-words text-[clamp(2.25rem,5.2vw,5.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-[var(--color-white)]"
+                className="portfolio-display mt-7 max-w-5xl break-words text-[clamp(1.75rem,3.4vw,3.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-[var(--color-white)]"
               >
                 {project.name}
               </h1>
