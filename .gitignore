@@ -1,3 +1,6 @@
 # Personal resume data — never commit.
 # Resumes are supplied at build time (see README).
 /content/
+
+# Raw generated art/video sources (large). Optimised frames are committed instead.
+/art/source/
