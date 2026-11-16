@@ -65,12 +65,58 @@ function extractNewCommand(text: string, command: string): string | undefined {
   }
 }
 
+function normalizeUrl(url: string): string {
+  return url.trim().replace(/\/+$/, "").toLowerCase();
+}
+
+const GITHUB_HOST = /^https?:\/\/(?:www\.)?github\.com(?:\/|$)/i;
+
+const LINKEDIN_HOST = /^https?:\/\/(?:[a-z0-9-]+\.)?linkedin\.com(?:\/|$)/i;
+
+/**
+ * A profile URL has exactly one path segment
+ * (github.com/user), while repository URLs have more
+ * (github.com/user/repo) and must not become the
+ * primary social link.
+ */
+function isGithubProfile(url: string): boolean {
+  return /^https?:\/\/(?:www\.)?github\.com\/[^/?#\s]+\/?$/i.test(url);
+}
+
+/**
+ * Derive a stable key from a hostname:
+ * https://www.example.com/x -> "example"
+ */
+function keyFromUrl(url: string): string {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+
+    return host.split(".")[0].toLowerCase().replace(/[^a-z0-9]+/g, "");
+  } catch {
+    return "";
+  }
+}
+
 function addLink(
   links: Record<string, string>,
   key: string,
   url: string,
 ): void {
   if (!url) {
+    return;
+  }
+
+  /*
+   * The same destination must never be stored twice,
+   * regardless of which discovery pass found it.
+   */
+  const normalizedUrl = normalizeUrl(url);
+
+  const alreadyStored = Object.values(links).some(
+    (value) => normalizeUrl(value) === normalizedUrl,
+  );
+
+  if (alreadyStored) {
     return;
   }
 
@@ -127,29 +173,42 @@ function extractLinks(text: string): Record<string, string> {
 
     const label = cleanLatex(headerMatch[2]);
 
-    if (!url) {
+    /*
+     * Only web links belong in metadata.links. The email
+     * address is exposed through metadata.email, and a
+     * mailto: whose macro was stripped ("mailto:") is empty.
+     */
+    if (!/^https?:\/\//i.test(url)) {
       continue;
     }
 
     /*
      * Known social platforms receive stable keys.
      */
-    if (/(?:^|\/)github\.com(?:\/|$)/i.test(url)) {
+    if (GITHUB_HOST.test(url)) {
       addLink(links, "github", url);
       continue;
     }
 
-    if (/(?:^|\/)linkedin\.com(?:\/|$)/i.test(url)) {
+    if (LINKEDIN_HOST.test(url)) {
       addLink(links, "linkedin", url);
       continue;
     }
 
-    const normalizedLabel = label
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "")
-      .trim();
+    /*
+     * Prefer a readable label ("Portfolio"); fall back to
+     * the hostname when the label is itself a URL or empty.
+     */
+    const labelLooksLikeUrl = /[./]/.test(label);
 
-    const key = normalizedLabel || "link";
+    const normalizedLabel = labelLooksLikeUrl
+      ? ""
+      : label
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "")
+          .trim();
+
+    const key = normalizedLabel || keyFromUrl(url) || "link";
 
     addLink(links, key, url);
   }
@@ -169,14 +228,17 @@ function extractLinks(text: string): Record<string, string> {
 
   let githubMatch: RegExpExecArray | null;
 
-  while ((githubMatch = githubPattern.exec(text)) !== null) {
-    addLink(links, "github", cleanLatex(githubMatch[1]));
+  while (!links.github && (githubMatch = githubPattern.exec(text)) !== null) {
+    const url = cleanLatex(githubMatch[1]);
 
     /*
-     * We only need the first primary GitHub URL.
-     * Additional URLs can still be represented as
-     * github2, github3, etc.
+     * Only a profile URL (github.com/user) is the primary
+     * GitHub link. Repository URLs belong to projects and
+     * must not leak into the profile metadata.
      */
+    if (isGithubProfile(url)) {
+      addLink(links, "github", url);
+    }
   }
 
   /*
@@ -199,7 +261,10 @@ function extractLinks(text: string): Record<string, string> {
 
   let linkedinMatch: RegExpExecArray | null;
 
-  while ((linkedinMatch = linkedinPattern.exec(text)) !== null) {
+  while (
+    !links.linkedin &&
+    (linkedinMatch = linkedinPattern.exec(text)) !== null
+  ) {
     addLink(links, "linkedin", cleanLatex(linkedinMatch[1]));
   }
 
