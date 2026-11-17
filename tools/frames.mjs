@@ -47,6 +47,8 @@ function parseArgs(argv) {
     minFrames: 90,
     maxFrames: 180,
     quality: 72,
+    width: 1280,
+    mobileWidth: 720,
     focal: null,
   };
 
@@ -68,6 +70,8 @@ function parseArgs(argv) {
     else if (flag === "--min-frames") take("minFrames", Number);
     else if (flag === "--max-frames") take("maxFrames", Number);
     else if (flag === "--quality") take("quality", Number);
+    else if (flag === "--width") take("width", Number);
+    else if (flag === "--mobile-width") take("mobileWidth", Number);
     else if (flag === "--focal") take("focal", (v) => v.split(",").map(Number));
     else if (flag === "--help" || flag === "-h") {
       console.log("See the header of tools/frames.mjs for usage.");
@@ -207,14 +211,22 @@ function main() {
     const rest = path.join(sceneDir);
 
     // Desktop first; mobile frames live in the "m" subfolder.
-    const desktopFrames = extract(source, rest, { width: 1280, fps, quality: options.quality, single: still });
-    const mobileFrames = extract(source, mobileDir, { width: 720, fps, quality: options.quality, single: still });
+    const desktopFrames = extract(source, rest, { width: options.width, fps, quality: options.quality, single: still });
+    // A still that is not downscaled for mobile would be an identical copy.
+    const sameAsDesktop = still && options.mobileWidth >= options.width;
+
+    const mobileFrames = sameAsDesktop
+      ? 0
+      : extract(source, mobileDir, { width: options.mobileWidth, fps, quality: options.quality, single: still });
+
+    if (sameAsDesktop) fs.rmSync(mobileDir, { recursive: true, force: true });
 
     const entry = {
       frames: desktopFrames,
       pattern: `/assets/scenes/${info.scene}/{n}.webp`,
-      mobilePattern: `/assets/scenes/${info.scene}/m/{n}.webp`,
-      mobileFrames,
+      ...(mobileFrames > 0
+        ? { mobilePattern: `/assets/scenes/${info.scene}/m/{n}.webp`, mobileFrames }
+        : {}),
       pad: 4,
       focal: options.focal ?? theme.presets[preset].scenes[info.scene]?.focal ?? [0.62, 0.5],
       push: still ? 1.12 : 1,

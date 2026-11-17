@@ -18,6 +18,7 @@
   --font-display: var(--font-brush), "Permanent Marker", "Arial Narrow", sans-serif;
   --font-body: var(--font-sans-body), Inter, system-ui, sans-serif;
   --font-mono: var(--font-mono-label), "JetBrains Mono", ui-monospace, monospace;
+  --font-hand: var(--font-hand-face), "Caveat", cursive;
 }
 
 * {
@@ -330,4 +331,153 @@ a {
 
 .comic-shake {
   animation: comic-shake 0.3s linear 2;
+}
+
+
+/* ------------------------------------------------------------------
+ * Cinematic UI kit (design comps): holo glass, brush type, CTA, notes
+ * ------------------------------------------------------------------ */
+
+:root {
+  --chamfer: 14px;
+}
+
+/* Brush headline: skewed marker lettering. */
+.brush {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 0.98;
+  letter-spacing: 0.01em;
+  transform: skewX(-6deg);
+  transform-origin: left bottom;
+}
+
+/* Holographic glass card with chamfered corners and a glowing edge. */
+.holo-glow {
+  filter: drop-shadow(
+    0 0 12px color-mix(in srgb, var(--holo, var(--color-primary)) 32%, transparent)
+  );
+}
+
+.holo {
+  --holo: var(--color-primary);
+  position: relative;
+  padding: 1px;
+  clip-path: polygon(
+    var(--chamfer) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    0 100%,
+    0 var(--chamfer)
+  );
+  background: linear-gradient(
+    135deg,
+    var(--holo),
+    color-mix(in srgb, var(--holo) 18%, transparent) 42%,
+    var(--holo)
+  );
+}
+
+.holo--accent {
+  --holo: var(--color-accent);
+}
+
+.holo-body {
+  height: 100%;
+  clip-path: polygon(
+    calc(var(--chamfer) - 1px) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer) + 1px),
+    calc(100% - var(--chamfer) + 1px) 100%,
+    0 100%,
+    0 calc(var(--chamfer) - 1px)
+  );
+  background: color-mix(in srgb, var(--color-graphite) 90%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Red call-to-action with a brushed edge. */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1.3rem;
+  background: var(--color-accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  clip-path: polygon(0 10%, 2% 0, 97% 5%, 100% 0, 99% 90%, 100% 100%, 3% 95%, 0 100%);
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
+}
+
+.cta:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.cta:focus-visible,
+.cta-ghost:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+.cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1.3rem;
+  border: 1px solid color-mix(in srgb, var(--color-white) 55%, transparent);
+  color: var(--color-white);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.cta-ghost:hover {
+  background: var(--color-white);
+  color: var(--color-void);
+}
+
+/* Handwritten graffiti note. */
+.note {
+  font-family: var(--font-hand);
+  font-size: clamp(1rem, 1.6vw, 1.5rem);
+  line-height: 1.05;
+  color: color-mix(in srgb, var(--color-primary) 60%, var(--color-white));
+  opacity: 0.72;
+  transform: rotate(-6deg);
+  pointer-events: none;
+}
+
+.micro {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

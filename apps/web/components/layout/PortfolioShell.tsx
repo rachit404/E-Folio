@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 
-import PortfolioNav from "@/components/navigation/PortfolioNav";
+import Nav from "@/components/nav/Nav";
 import ResetHashOnReload from "@/components/navigation/ResetHashOnReload";
+import SmoothScroll from "@/components/motion/SmoothScroll";
+import Chrome from "@/components/shell/Chrome";
+import SceneStage from "@/components/stage/SceneStage";
 import ThemeRoot from "@/components/layout/ThemeRoot";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import SmoothScroll from "@/components/motion/SmoothScroll";
+import { SCENE_IDS } from "@/lib/scenes/order";
 import type { PortfolioTheme } from "@/lib/theme";
 
 interface PortfolioShellProps {
@@ -23,23 +26,31 @@ export default function PortfolioShell({
   return (
     <ThemeRoot theme={theme}>
       <ThemeProvider theme={theme}>
-      <SmoothScroll>
-        <ResetHashOnReload />
+        <SmoothScroll>
+          <ResetHashOnReload />
 
-        <div className="relative min-h-screen bg-[var(--color-void)]">
-          <PortfolioNav profiles={profiles} activeRole={activeRole} />
+          <div className="relative bg-[var(--color-void)]">
+            <SceneStage
+              scenes={SCENE_IDS}
+              manifest={theme.scenes}
+              palette={{
+                void: theme.colors.void,
+                primary: theme.colors.primary,
+                accent: theme.colors.accent,
+              }}
+            />
 
-          <div className="pointer-events-none fixed inset-0 z-30">
-            <div className="absolute inset-0 border border-white/[0.04]" />
+            <Chrome copy={theme.copy} />
 
-            <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-[var(--color-primary)]/20 to-transparent" />
+            <Nav
+              name={theme.identity.name}
+              profiles={profiles}
+              activeRole={activeRole}
+            />
 
-            <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-[var(--color-accent)]/20 to-transparent" />
+            <main className="relative z-10">{children}</main>
           </div>
-
-          <main>{children}</main>
-        </div>
-      </SmoothScroll>
+        </SmoothScroll>
       </ThemeProvider>
     </ThemeRoot>
   );

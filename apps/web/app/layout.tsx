@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Permanent_Marker } from "next/font/google";
+import {
+  Caveat,
+  Inter,
+  JetBrains_Mono,
+  Permanent_Marker,
+} from "next/font/google";
 import "./globals.css";
 
 /*
@@ -28,6 +33,12 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+const hand = Caveat({
+  subsets: ["latin"],
+  variable: "--font-hand-face",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Rachit Doshi | Portfolio",
   description:
@@ -38,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${brush.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
+      className={`${brush.variable} ${sans.variable} ${mono.variable} ${hand.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

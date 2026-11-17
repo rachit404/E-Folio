@@ -119,6 +119,12 @@ export const CopySchema = z.object({
     .default(
       "Turning ideas into impactful tech, with a bit of creativity, a lot of curiosity, and a vision for a bigger tomorrow.",
     ),
+  /** About paragraphs shown after the facts taken from the resume. */
+  about: z
+    .array(z.string())
+    .default([
+      "I explore the intersection of software, AI, and cybersecurity: building, breaking, and learning my way towards a more interesting tomorrow.",
+    ]),
   /** Handwritten notes scattered through the scenes. */
   notes: z
     .array(z.string())

@@ -1,17 +1,20 @@
 import { notFound } from "next/navigation";
 
+import {
+  applyExtras,
+  hasResumePdf,
+  loadSiteExtras,
+} from "@/content/loader/extras";
 import { listProfiles, loadPortfolio } from "@/content/loader/portfolio";
 import { loadTheme } from "@/lib/theme";
 
 import PortfolioShell from "@/components/layout/PortfolioShell";
-import PortfolioWorld from "@/components/layout/PortfolioWorld";
-
-import Hero from "@/components/hero/Hero";
-import AboutScene from "@/components/about/AboutScene";
-import ExperienceScene from "@/components/experience/ExperienceScene";
-import SkillsScene from "@/components/skills/SkillsScene";
-import ProjectsScene from "@/components/projects/ProjectsScene";
-import ContactScene from "@/components/contact/ContactScene";
+import AboutScene from "@/components/scenes/AboutScene";
+import ContactScene from "@/components/scenes/ContactScene";
+import ExperienceScene from "@/components/scenes/ExperienceScene";
+import HomeScene from "@/components/scenes/HomeScene";
+import ProjectsScene from "@/components/scenes/ProjectsScene";
+import SkillsScene from "@/components/scenes/SkillsScene";
 
 interface RolePageProps {
   params: Promise<{
@@ -42,26 +45,39 @@ export default async function RolePage({ params }: RolePageProps) {
     notFound();
   }
 
-  const [portfolio, theme] = await Promise.all([
+  const [portfolio, baseTheme, extras, hasResume] = await Promise.all([
     loadPortfolio(activeRole),
     loadTheme(activeRole),
+    loadSiteExtras(activeRole),
+    hasResumePdf(activeRole),
   ]);
+
+  // Optional gitignored site files can override individual copy fields.
+  const theme = { ...baseTheme, copy: applyExtras(baseTheme.copy, extras) };
 
   return (
     <PortfolioShell theme={theme} profiles={profiles} activeRole={activeRole}>
-      <PortfolioWorld theme={theme}>
-        <Hero portfolio={portfolio} theme={theme} />
+      <HomeScene
+        portfolio={portfolio}
+        copy={theme.copy}
+        role={activeRole}
+        hasResume={hasResume}
+      />
 
-        <AboutScene portfolio={portfolio} />
+      <AboutScene portfolio={portfolio} copy={theme.copy} />
 
-        <ExperienceScene portfolio={portfolio} />
+      <ExperienceScene portfolio={portfolio} />
 
-        <SkillsScene portfolio={portfolio} />
+      <ProjectsScene portfolio={portfolio} />
 
-        <ProjectsScene portfolio={portfolio} />
+      <SkillsScene portfolio={portfolio} />
 
-        <ContactScene portfolio={portfolio} />
-      </PortfolioWorld>
+      <ContactScene
+        portfolio={portfolio}
+        copy={theme.copy}
+        role={activeRole}
+        hasResume={hasResume}
+      />
     </PortfolioShell>
   );
 }

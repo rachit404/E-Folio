@@ -2,7 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-import { CityRenderer, type CityPalette } from "@/lib/scenes/city";
+import {
+  CityRenderer,
+  parseColor,
+  rgba,
+  type CityPalette,
+} from "@/lib/scenes/city";
 import {
   coverRect,
   dissolvePlan,
@@ -176,6 +181,27 @@ export default function SceneStage({
       state.renderer.draw(context, progress, time);
     };
 
+    /**
+     * Darkens the side where the text sits so copy stays readable over
+     * bright art. Landscape: left side. Portrait: the whole frame, a
+     * little more toward the top where the headline is.
+     */
+    const drawScrim = () => {
+      const base = parseColor(palette.void, [5, 6, 8]);
+
+      const portrait = width < height;
+
+      const gradient = portrait
+        ? context.createLinearGradient(0, 0, 0, height)
+        : context.createLinearGradient(0, 0, width * 0.6, 0);
+
+      gradient.addColorStop(0, rgba(base, portrait ? 0.72 : 0.8));
+      gradient.addColorStop(1, rgba(base, portrait ? 0.35 : 0));
+
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, width, height);
+    };
+
     /** Returns false when the scene has no frame to show yet. */
     const drawFrames = (state: SceneState, progress: number): boolean => {
       const set = state.frames;
@@ -204,6 +230,8 @@ export default function SceneStage({
       );
 
       context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+
+      drawScrim();
 
       return true;
     };

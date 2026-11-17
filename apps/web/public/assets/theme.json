@@ -79,6 +79,78 @@
             "difficulty": "easy"
           }
         }
+      },
+      "scenes": {
+        "404": {
+          "frames": 1,
+          "pattern": "/assets/scenes/404/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.71,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "home": {
+          "frames": 1,
+          "pattern": "/assets/scenes/home/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.8,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "about": {
+          "frames": 1,
+          "pattern": "/assets/scenes/about/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.64,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "experience": {
+          "frames": 1,
+          "pattern": "/assets/scenes/experience/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.74,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "projects": {
+          "frames": 1,
+          "pattern": "/assets/scenes/projects/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.7,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "skills": {
+          "frames": 1,
+          "pattern": "/assets/scenes/skills/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.68,
+            0.5
+          ],
+          "push": 1.12
+        },
+        "contact": {
+          "frames": 1,
+          "pattern": "/assets/scenes/contact/{n}.webp",
+          "pad": 4,
+          "focal": [
+            0.78,
+            0.5
+          ],
+          "push": 1.12
+        }
       }
     },
     "hulk": {

@@ -398,10 +398,18 @@ export class CityRenderer {
     context.restore();
 
     // Vignette keeps the text column readable.
-    const vignette = context.createLinearGradient(0, 0, width * 0.55, 0);
+    // On portrait screens the text spans the full width, so darken more.
+    const portrait = width < height;
 
-    vignette.addColorStop(0, rgba(this.base, 0.82));
-    vignette.addColorStop(1, rgba(this.base, 0));
+    const vignette = context.createLinearGradient(
+      0,
+      0,
+      width * (portrait ? 1 : 0.55),
+      0,
+    );
+
+    vignette.addColorStop(0, rgba(this.base, portrait ? 0.7 : 0.82));
+    vignette.addColorStop(1, rgba(this.base, portrait ? 0.45 : 0));
 
     context.fillStyle = vignette;
     context.fillRect(0, 0, width, height);
@@ -423,7 +431,7 @@ export class CityRenderer {
       const radius = (sun ? 0.16 : 0.07) * height;
 
       const cx = width * (sun ? 0.7 : 0.74);
-      const cy = sun ? horizon - radius * 0.6 : height * 0.2;
+      const cy = sun ? horizon - radius * 0.6 : height * 0.3;
 
       const glow = context.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius * 4);
 
