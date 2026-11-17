@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
+import GameGate from "@/components/games/GameGate";
 import SceneSection from "@/components/shell/SceneSection";
 import { collectCertificates, groupSkills } from "@/components/skills/group";
 import BrushTitle from "@/components/ui/BrushTitle";
@@ -78,6 +79,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
 
   return (
     <SceneSection id="skills">
+      <GameGate sectionId="skills" data={{ labels: nodes.filter((node) => !node.certificates).flatMap((node) => node.items), words: [] }}>
       <div className="flex h-full flex-col gap-4 lg:flex-row lg:gap-6">
         <div className="flex max-w-[22rem] shrink-0 flex-col justify-center gap-4 lg:w-[24%]">
           <SectionChip number={sceneNumber("skills")} label="Skills" />
@@ -227,6 +229,7 @@ export default function SkillsScene({ portfolio }: SkillsSceneProps) {
           </>
         )}
       </div>
+      </GameGate>
     </SceneSection>
   );
 }

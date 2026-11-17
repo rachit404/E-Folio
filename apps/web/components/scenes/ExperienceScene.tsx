@@ -3,6 +3,7 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
+import GameGate from "@/components/games/GameGate";
 import SceneSection from "@/components/shell/SceneSection";
 import BrushTitle from "@/components/ui/BrushTitle";
 import HoloCard from "@/components/ui/HoloCard";
@@ -43,6 +44,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
 
   return (
     <SceneSection id="experience">
+      <GameGate sectionId="experience" data={{ labels: [], words: steps.map((step) => step.title) }}>
       <div className="flex h-full flex-col gap-4 md:flex-row md:gap-6">
         <div className="flex max-w-[24rem] shrink-0 flex-col justify-center gap-4 md:w-[26%]">
           <SectionChip number={sceneNumber("experience")} label="Experience" />
@@ -159,6 +161,7 @@ export default function ExperienceScene({ portfolio }: ExperienceSceneProps) {
           </div>
         )}
       </div>
+      </GameGate>
     </SceneSection>
   );
 }

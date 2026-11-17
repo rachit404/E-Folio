@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import GameControls from "@/components/games/GameControls";
+import GameProvider from "@/components/games/GameProvider";
 import Nav from "@/components/nav/Nav";
 import ResetHashOnReload from "@/components/navigation/ResetHashOnReload";
 import SmoothScroll from "@/components/motion/SmoothScroll";
@@ -26,6 +28,7 @@ export default function PortfolioShell({
   return (
     <ThemeRoot theme={theme}>
       <ThemeProvider theme={theme}>
+        <GameProvider>
         <SmoothScroll>
           <ResetHashOnReload />
 
@@ -46,11 +49,13 @@ export default function PortfolioShell({
               name={theme.identity.name}
               profiles={profiles}
               activeRole={activeRole}
+              trailing={<GameControls />}
             />
 
             <main className="relative z-10">{children}</main>
           </div>
         </SmoothScroll>
+        </GameProvider>
       </ThemeProvider>
     </ThemeRoot>
   );

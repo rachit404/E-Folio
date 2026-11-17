@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 
 import type { PortfolioData } from "@/content/schema/portfolio";
+import GameGate from "@/components/games/GameGate";
 import SceneSection from "@/components/shell/SceneSection";
 import BrushTitle from "@/components/ui/BrushTitle";
 import HoloCard from "@/components/ui/HoloCard";
@@ -64,6 +65,7 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
 
   return (
     <SceneSection id="projects">
+      <GameGate sectionId="projects" data={{ labels: projects.map((project) => project.name), words: projects.map((project) => project.name) }}>
       <div className="flex h-full flex-col gap-4 md:flex-row md:gap-6">
         <div className="flex max-w-[24rem] shrink-0 flex-col justify-center gap-4 md:w-[26%]">
           <SectionChip number={sceneNumber("projects")} label="Projects" />
@@ -208,6 +210,7 @@ export default function ProjectsScene({ portfolio }: ProjectsSceneProps) {
           onStep={step}
         />
       )}
+      </GameGate>
     </SceneSection>
   );
 }

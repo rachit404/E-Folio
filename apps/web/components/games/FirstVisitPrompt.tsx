@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 
 import { useTheme } from "@/components/layout/ThemeProvider";
+import BrushTitle from "@/components/ui/BrushTitle";
+import HoloCard from "@/components/ui/HoloCard";
 import { useGameStore } from "@/lib/games/store";
 
 /**
@@ -60,49 +62,40 @@ export default function FirstVisitPrompt() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="game-prompt-title"
-        className="comic-panel comic-enlarge w-full max-w-xl p-8 md:p-10"
+        className="comic-enlarge w-full max-w-lg"
       >
-        <span className="comic-caption absolute -top-3 right-4">
-          NEW CASE FILES
-        </span>
+        <HoloCard tone="accent" bodyClassName="space-y-5 p-6 md:p-8">
+          <p className="micro text-[var(--color-primary)]">Before you enter</p>
 
-        <p className="portfolio-mono text-[9px] tracking-[0.2em] text-[var(--color-primary)]">
-          BEFORE YOU ENTER
-        </p>
+          <div id="game-prompt-title">
+            <BrushTitle first="Play" second="or browse?" />
+          </div>
 
-        <h2
-          id="game-prompt-title"
-          className="portfolio-display mt-4 text-4xl font-black leading-[0.9] tracking-tight md:text-5xl"
-        >
-          PLAY
-          <br />
-          <span className="text-[var(--color-accent)]">OR BROWSE?</span>
-        </h2>
+          <p className="text-sm leading-6 text-[var(--color-white)]/80">
+            Some sections are case files: solve a quick puzzle to open the
+            details. You can skip any puzzle, switch games on or off per
+            section, or use Interviewer mode to open everything at once.
+          </p>
 
-        <p className="mt-6 text-sm leading-7 text-[var(--color-muted)]">
-          Some sections are case files: solve a quick puzzle to open the
-          details. You can skip any puzzle, or switch games on and off per
-          section, whenever you like.
-        </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              ref={browseRef}
+              type="button"
+              className="cta"
+              onClick={() => choose("browse")}
+            >
+              Just show me the portfolio
+            </button>
 
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <button
-            ref={browseRef}
-            type="button"
-            className="comic-button"
-            onClick={() => choose("browse")}
-          >
-            Just show me the portfolio
-          </button>
-
-          <button
-            type="button"
-            className="comic-button comic-button--ghost"
-            onClick={() => choose("play")}
-          >
-            Play the cases
-          </button>
-        </div>
+            <button
+              type="button"
+              className="cta-ghost"
+              onClick={() => choose("play")}
+            >
+              Play the cases
+            </button>
+          </div>
+        </HoloCard>
       </div>
     </div>
   );
