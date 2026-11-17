@@ -64,7 +64,7 @@ export default function GameGate({ sectionId, data, children }: GameGateProps) {
 
   return (
     <div ref={root} className="relative h-full">
-      <div className={`h-full ${justOpened ? "comic-unlock" : ""}`}>
+      <div className={`h-full ${justOpened ? "unlock-in" : ""}`}>
         {children}
       </div>
 

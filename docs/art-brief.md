@@ -122,16 +122,24 @@ File names: `01_home.mp4`, `02_about.mp4`, `03_experience.mp4`,
 - [ ] At least 1080p and at least 5 s
 - [ ] No obvious artefacts on the hero's hands and face (back view helps)
 
-## What I do with your files
+## Converting your files
 
-- Extract frames with `ffmpeg` (already installed here) into WebP sequences:
-  desktop about 1280 wide, mobile about 720 wide, roughly 90-180 frames per
-  scene, kept to a few MB each and lazy-loaded when the scene nears.
-- If a clip is short, I retime or interpolate frames so scrolling feels like slow motion.
-- Add a first-frame poster for instant paint and a reduced-motion still.
-- Everything scene-specific (file names, frame counts, focal point for mobile
-  crop) lives in `theme.json`, so a different theme such as Hulk is a new set of
-  art plus a config change.
+Run the tool (needs `ffmpeg` and `ffprobe` on your PATH; no other dependencies):
+
+```bash
+node tools/frames.mjs                                   # everything in art/source
+node tools/frames.mjs --only 01_home.png --focal 0.8,0.5 --width 1672 --mobile-width 1672
+```
+
+- A **clip** becomes 90 to 180 WebP frames (about 24 per second): desktop 1280 wide,
+  mobile 720 wide. Scrolling scrubs through them, so keep one smooth camera move.
+- A **still** becomes one frame plus a slow scroll push-in. Use `--width` and
+  `--mobile-width` to keep it at full resolution; if they match, no duplicate mobile
+  copy is written.
+- `--focal x,y` (0 to 1) is where the subject sits. Portrait phones crop around it.
+- The scene's entry in `apps/web/public/assets/theme.json` is written for you, so
+  replacing a still with a clip later needs no code change.
+- Raw files in `art/source/` are gitignored; the optimised frames are committed.
 
 ## Other assets I need from you
 

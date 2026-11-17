@@ -8,7 +8,7 @@ import {
   collectCertificates,
   groupSkills,
   splitCertificate,
-} from "./group";
+} from "./skills";
 
 const portfolio = PortfolioSchema.parse(parseDocument(SAMPLE_TEX, "s.tex"));
 

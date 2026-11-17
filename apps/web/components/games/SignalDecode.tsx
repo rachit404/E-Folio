@@ -120,7 +120,7 @@ export default function SignalDecode({ difficulty, data, onWin }: GameProps) {
 
       {/* Answer slots */}
       <div
-        className={`mb-6 flex flex-wrap justify-center gap-2 ${wrong ? "comic-shake" : ""}`}
+        className={`mb-6 flex flex-wrap justify-center gap-2 ${wrong ? "shake" : ""}`}
         aria-live="polite"
       >
         {Array.from({ length: word.length }, (_, index) => {

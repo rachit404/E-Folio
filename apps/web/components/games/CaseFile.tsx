@@ -66,7 +66,7 @@ export default function CaseFile({
     <div className="flex h-full items-center">
       <HoloCard
         tone="accent"
-        className={`comic-enlarge w-full ${expanded ? "max-w-[46rem]" : "max-w-[34rem]"}`}
+        className={`enlarge-in w-full ${expanded ? "max-w-[46rem]" : "max-w-[34rem]"}`}
         bodyClassName="space-y-5 p-6 md:p-8"
       >
         <div className="flex items-start justify-between gap-4">
@@ -86,9 +86,9 @@ export default function CaseFile({
             </p>
 
             <div aria-hidden="true" className="space-y-2">
-              <span className="comic-redacted w-4/5" />
-              <span className="comic-redacted w-3/5" />
-              <span className="comic-redacted w-2/3" />
+              <span className="redacted w-4/5" />
+              <span className="redacted w-3/5" />
+              <span className="redacted w-2/3" />
             </div>
           </>
         )}

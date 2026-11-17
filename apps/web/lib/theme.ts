@@ -20,69 +20,6 @@ const ColorsSchema = z.object({
   dim: z.string(),
 });
 
-const HeroSchema = z.object({
-  backgroundImage: z.string(),
-  foregroundImage: z.string(),
-  character: z.string(),
-  eyebrow: z.string(),
-  status: z.string(),
-  cta: z.string(),
-  scrollLabel: z.string(),
-});
-
-const WorldSchema = z.object({
-  defaultWorld: z.string().optional(),
-  backgroundOpacity: z.number().optional(),
-  enableParallax: z.boolean().optional(),
-  enableAtmosphere: z.boolean().optional(),
-  /**
-   * Optional per-world background image overrides
-   * (world id -> public path). Missing worlds use the default art
-   * from lib/worlds.ts.
-   */
-  backgrounds: z.record(z.string(), z.string()).optional(),
-});
-
-const MascotSchema = z.object({
-  id: z.string().optional(),
-  enabled: z.boolean().optional(),
-  scale: z.number().optional(),
-  primary: z.string().optional(),
-  secondary: z.string().optional(),
-  accent: z.string().optional(),
-});
-
-/**
- * Comic-panel look and motion. Every value has a default, so a
- * preset may omit this block or override just a few fields.
- * Colour values are plain CSS, so presets can reference theme
- * tokens, e.g. "var(--color-accent)".
- */
-export const ComicSchema = z.object({
-  /** Panel outline colour. */
-  ink: z.string().default("var(--color-white)"),
-  /** Hard offset shadow colour behind each panel. */
-  shadow: z.string().default("var(--color-accent)"),
-  /** Outline thickness in px. */
-  borderWidth: z.number().min(0).default(3),
-  /** Hard shadow offset in px. */
-  shadowOffset: z.number().min(0).default(8),
-  /** Gap between panels in px. */
-  gutter: z.number().min(0).default(20),
-  /** Halftone dot overlay strength, 0 to 1. */
-  halftone: z.number().min(0).max(1).default(0.1),
-  /** How panels play in as the page scrolls. */
-  reveal: z
-    .object({
-      style: z.enum(["pop", "wipe", "slide"]).default("pop"),
-      /** Seconds of scroll smoothing; 0 locks frames to the scrollbar. */
-      scrub: z.number().min(0).default(0.4),
-    })
-    .prefault({}),
-  /** Onomatopoeia per section id, e.g. { experience: "THWIP!" }. */
-  sfx: z.record(z.string(), z.string()).default({}),
-});
-
 /**
  * Frame sequence for one scene (see tools/frames.mjs). A scene with no
  * entry here is drawn by the procedural placeholder instead.
@@ -200,13 +137,6 @@ const PresetSchema = z.object({
   /** Optional per-preset overrides of the shared identity. */
   identity: IdentitySchema.partial().optional(),
   colors: ColorsSchema,
-  hero: HeroSchema,
-  navigation: z.object({
-    showNumbers: z.boolean(),
-  }),
-  world: WorldSchema.optional(),
-  mascot: MascotSchema.optional(),
-  comic: ComicSchema.prefault({}),
   games: GamesSchema.prefault({}),
   copy: CopySchema.prefault({}),
   scenes: z.record(z.string(), SceneSchema).default({}),
@@ -256,18 +186,6 @@ export interface PortfolioTheme {
   identity: z.infer<typeof IdentitySchema>;
 
   colors: z.infer<typeof ColorsSchema>;
-
-  hero: z.infer<typeof HeroSchema>;
-
-  navigation: {
-    showNumbers: boolean;
-  };
-
-  world?: z.infer<typeof WorldSchema>;
-
-  mascot?: z.infer<typeof MascotSchema>;
-
-  comic: z.infer<typeof ComicSchema>;
 
   games: z.infer<typeof GamesSchema>;
 

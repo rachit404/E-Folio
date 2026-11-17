@@ -13,7 +13,7 @@ interface ThemeProviderProps {
 
 /**
  * Makes the resolved theme preset available to client components
- * (scenes, comic panels, games) without prop drilling.
+ * (scenes, UI kit, games) without prop drilling.
  */
 export function ThemeProvider({ theme, children }: ThemeProviderProps) {
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;

@@ -16,28 +16,16 @@ const colors = {
   dim: "#555",
 };
 
-const hero = {
-  backgroundImage: "",
-  foregroundImage: "",
-  character: "c",
-  eyebrow: "eyebrow",
-  status: "status",
-  cta: "cta",
-  scrollLabel: "scroll",
-};
-
 function makeFile(overrides: Partial<ThemeFile> = {}): ThemeFile {
   return ThemeFileSchema.parse({
     identity: { name: "Jane", shortName: "J", universe: "U" },
     default: "alpha",
     roles: {},
     presets: {
-      alpha: { colors, hero, navigation: { showNumbers: true } },
+      alpha: { colors },
       beta: {
         identity: { universe: "BETA-U" },
         colors: { ...colors, primary: "#0f0" },
-        hero,
-        navigation: { showNumbers: false },
       },
     },
     ...overrides,
@@ -57,7 +45,6 @@ describe("resolveTheme", () => {
 
     expect(theme.id).toBe("beta");
     expect(theme.colors.primary).toBe("#0f0");
-    expect(theme.navigation.showNumbers).toBe(false);
   });
 
   it("merges preset identity overrides onto the shared identity", () => {
@@ -112,11 +99,6 @@ describe("scene and copy config", () => {
             void: "#000", graphite: "#111", panel: "#222", primary: "#0ff",
             accent: "#f00", white: "#fff", muted: "#999", dim: "#555",
           },
-          hero: {
-            backgroundImage: "", foregroundImage: "", character: "c",
-            eyebrow: "", status: "", cta: "", scrollLabel: "",
-          },
-          navigation: { showNumbers: true },
           ...extra,
         },
       },
@@ -158,5 +140,26 @@ describe("scene and copy config", () => {
 
   it("has no scenes configured by default (placeholder art)", () => {
     expect(file({}).presets.a.scenes).toEqual({});
+  });
+});
+
+describe("backwards compatibility", () => {
+  it("ignores leftover keys from the old theme format", () => {
+    const parsed = ThemeFileSchema.parse({
+      identity: { name: "J", shortName: "J", universe: "U" },
+      default: "a",
+      presets: {
+        a: {
+          colors,
+          hero: { eyebrow: "old" },
+          navigation: { showNumbers: true },
+          mascot: { enabled: true },
+          comic: { borderWidth: 4 },
+        },
+      },
+    });
+
+    expect(Object.keys(parsed.presets.a)).not.toContain("hero");
+    expect(Object.keys(parsed.presets.a)).not.toContain("comic");
   });
 });

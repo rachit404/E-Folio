@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import type { PortfolioData } from "@/content/schema/portfolio";
 import GameGate from "@/components/games/GameGate";
 import SceneSection from "@/components/shell/SceneSection";
-import { collectCertificates, groupSkills } from "@/components/skills/group";
+import { collectCertificates, groupSkills } from "@/lib/portfolio/skills";
 import BrushTitle from "@/components/ui/BrushTitle";
 import HoloCard from "@/components/ui/HoloCard";
 import SectionChip from "@/components/ui/SectionChip";

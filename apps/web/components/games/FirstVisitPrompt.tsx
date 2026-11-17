@@ -62,7 +62,7 @@ export default function FirstVisitPrompt() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="game-prompt-title"
-        className="comic-enlarge w-full max-w-lg"
+        className="enlarge-in w-full max-w-lg"
       >
         <HoloCard tone="accent" bodyClassName="space-y-5 p-6 md:p-8">
           <p className="micro text-[var(--color-primary)]">Before you enter</p>

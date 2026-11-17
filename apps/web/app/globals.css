@@ -86,29 +86,6 @@ a {
   background: var(--color-primary);
 }
 
-/* Utility classes */
-
-.portfolio-panel {
-  background: rgba(16, 21, 27, 0.72);
-  border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(14px);
-}
-
-.portfolio-mono {
-  font-family: var(--font-mono);
-  letter-spacing: 0.08em;
-}
-
-.portfolio-display {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  /* Brush lettering needs normal spacing and line height; this unlayered
-     rule intentionally wins over the tight Tailwind tracking/leading
-     utilities that were written for a condensed sans. */
-  letter-spacing: 0.01em;
-  line-height: 1.05;
-}
-
 /* Accessibility */
 
 @media (prefers-reduced-motion: reduce) {
@@ -140,153 +117,18 @@ a {
 }
 
 /* ------------------------------------------------------------------
- * Comic panels
- *
- * Every value comes from the active theme preset (see ThemeRoot),
- * so a different preset restyles panels without touching components.
- * ------------------------------------------------------------------ */
-
-.comic-panel {
-  position: relative;
-  background: color-mix(in srgb, var(--color-panel) 94%, transparent);
-  border: var(--comic-border) solid var(--comic-ink);
-  box-shadow: var(--comic-shadow-offset) var(--comic-shadow-offset) 0
-    var(--comic-shadow);
-  will-change: transform, opacity;
-}
-
-/* Halftone dots fading in toward the lower-right corner. */
-.comic-panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: var(--comic-halftone);
-  background-image: radial-gradient(var(--comic-ink) 0.9px, transparent 1.2px);
-  background-size: 7px 7px;
-  -webkit-mask-image: linear-gradient(135deg, transparent 40%, #000);
-  mask-image: linear-gradient(135deg, transparent 40%, #000);
-}
-
-/* Narration / caption box. */
-.comic-caption {
-  display: inline-block;
-  background: var(--color-white);
-  color: var(--color-void);
-  border: 2px solid var(--color-void);
-  box-shadow: 3px 3px 0 var(--color-primary);
-  padding: 0.3rem 0.65rem;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-/* Onomatopoeia. */
-.comic-sfx {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: clamp(2rem, 5vw, 4rem);
-  line-height: 1;
-  color: var(--color-primary);
-  -webkit-text-stroke: 2px var(--color-void);
-  paint-order: stroke fill;
-  text-shadow: 4px 4px 0 var(--color-accent);
-  transform: rotate(-8deg);
-}
-
-/* Skill / tag chip inside a comic panel. */
-.comic-chip {
-  display: inline-block;
-  border: 2px solid var(--comic-ink);
-  background: color-mix(in srgb, var(--color-void) 70%, transparent);
-  padding: 0.35rem 0.75rem;
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--color-white);
-  box-shadow: 3px 3px 0 var(--color-primary);
-  transition:
-    transform 0.15s ease,
-    background 0.15s ease,
-    color 0.15s ease;
-}
-
-.comic-chip:hover {
-  transform: translate(-2px, -2px);
-  background: var(--color-primary);
-  color: var(--color-void);
-}
-
-/* ------------------------------------------------------------------
  * Case files (mini-games)
  * ------------------------------------------------------------------ */
 
-.comic-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  border: 2px solid var(--comic-ink);
-  background: var(--color-primary);
-  color: var(--color-void);
-  padding: 0.7rem 1.2rem;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  box-shadow: 4px 4px 0 var(--color-accent);
-  cursor: pointer;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.comic-button:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--color-accent);
-}
-
-.comic-button:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--color-accent);
-}
-
-.comic-button:focus-visible {
-  outline: 3px solid var(--color-white);
-  outline-offset: 3px;
-}
-
-.comic-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.comic-button--ghost {
-  background: transparent;
-  color: var(--color-white);
-  box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-white) 25%, transparent);
-}
-
-.comic-button--ghost:hover:not(:disabled) {
-  background: var(--color-white);
-  color: var(--color-void);
-}
-
 /* Redacted evidence bars on a locked case file. */
-.comic-redacted {
+.redacted {
   display: block;
   height: 0.8rem;
   background: var(--color-white);
   opacity: 0.12;
 }
 
-@keyframes comic-enlarge {
+@keyframes enlarge-in {
   from {
     opacity: 0;
     transform: scale(0.96) translateY(12px);
@@ -297,11 +139,11 @@ a {
   }
 }
 
-.comic-enlarge {
-  animation: comic-enlarge 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+.enlarge-in {
+  animation: enlarge-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes comic-unlock {
+@keyframes unlock-in {
   from {
     opacity: 0;
     transform: translateY(28px);
@@ -312,11 +154,11 @@ a {
   }
 }
 
-.comic-unlock {
-  animation: comic-unlock 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+.unlock-in {
+  animation: unlock-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes comic-shake {
+@keyframes shake {
   0%,
   100% {
     transform: translateX(0);
@@ -329,8 +171,8 @@ a {
   }
 }
 
-.comic-shake {
-  animation: comic-shake 0.3s linear 2;
+.shake {
+  animation: shake 0.3s linear 2;
 }
 
 
