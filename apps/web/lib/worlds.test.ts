@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { ComicSchema, GamesSchema, type PortfolioTheme } from "./theme";
+import {
+  ComicSchema,
+  CopySchema,
+  GamesSchema,
+  type PortfolioTheme,
+} from "./theme";
 import { WORLD_CONFIGS, getWorldConfig } from "./worlds";
 
 function themeWith(backgrounds?: Record<string, string>): PortfolioTheme {
@@ -30,6 +35,8 @@ function themeWith(backgrounds?: Record<string, string>): PortfolioTheme {
     world: backgrounds ? { backgrounds } : undefined,
     comic: ComicSchema.parse({}),
     games: GamesSchema.parse({}),
+    copy: CopySchema.parse({}),
+    scenes: {},
   };
 }
 

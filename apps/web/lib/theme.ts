@@ -83,6 +83,80 @@ export const ComicSchema = z.object({
   sfx: z.record(z.string(), z.string()).default({}),
 });
 
+/**
+ * Frame sequence for one scene (see tools/frames.mjs). A scene with no
+ * entry here is drawn by the procedural placeholder instead.
+ */
+export const SceneSchema = z.object({
+  frames: z.number().int().positive(),
+  /** URL with an {n} placeholder, e.g. "/assets/scenes/home/{n}.webp". */
+  pattern: z.string().refine((value) => value.includes("{n}"), {
+    message: "pattern must contain {n}",
+  }),
+  mobilePattern: z.string().optional(),
+  mobileFrames: z.number().int().positive().optional(),
+  pad: z.number().int().min(1).max(8).default(4),
+  /** Subject position 0..1, used when cropping to the viewport. */
+  focal: z.tuple([z.number(), z.number()]).default([0.5, 0.5]),
+  /** Zoom at the end of the scene (1 = none); stills use ~1.12. */
+  push: z.number().min(1).max(2).default(1),
+});
+
+/**
+ * Short, editable wording from the design comps. Facts about the
+ * person (name, course, projects, ...) never live here: they come
+ * from the resume.
+ */
+export const CopySchema = z.object({
+  taglineTop: z.string().default("Same mind. Different universe."),
+  taglineFooter: z
+    .string()
+    .default("Built in another universe for a brighter one."),
+  greeting: z.string().default("Hey, I'm"),
+  roles: z.array(z.string()).default(["Engineer", "Builder", "Curious mind"]),
+  intro: z
+    .string()
+    .default(
+      "Turning ideas into impactful tech, with a bit of creativity, a lot of curiosity, and a vision for a bigger tomorrow.",
+    ),
+  /** Handwritten notes scattered through the scenes. */
+  notes: z
+    .array(z.string())
+    .default(["Build. Break. Learn. Repeat.", "A better version ahead", "Ideas. Code. Impact."]),
+  pillars: z
+    .array(
+      z.object({
+        title: z.string(),
+        text: z.string(),
+        tags: z.array(z.string()).default([]),
+      }),
+    )
+    .default([
+      {
+        title: "Engineering",
+        text: "Turning ideas into scalable, real-world solutions.",
+        tags: ["System design", "Full stack", "Dev tools"],
+      },
+      {
+        title: "AI / ML",
+        text: "Exploring intelligent systems to solve meaningful problems.",
+        tags: ["LLMs", "Data science", "Generative AI"],
+      },
+      {
+        title: "Cybersecurity",
+        text: "Understanding systems deeply by breaking and securing them.",
+        tags: ["Networking", "Linux", "Security research"],
+      },
+      {
+        title: "Experimentation",
+        text: "Always building, always learning, always curious.",
+        tags: ["Side projects", "New tech", "Open source"],
+      },
+    ]),
+  ctaPrimary: z.string().default("Explore my work"),
+  ctaSecondary: z.string().default("Download resume"),
+});
+
 export const GAME_IDS = ["match", "decode", "target"] as const;
 
 export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
@@ -128,6 +202,8 @@ const PresetSchema = z.object({
   mascot: MascotSchema.optional(),
   comic: ComicSchema.prefault({}),
   games: GamesSchema.prefault({}),
+  copy: CopySchema.prefault({}),
+  scenes: z.record(z.string(), SceneSchema).default({}),
 });
 
 /**
@@ -188,6 +264,10 @@ export interface PortfolioTheme {
   comic: z.infer<typeof ComicSchema>;
 
   games: z.infer<typeof GamesSchema>;
+
+  copy: z.infer<typeof CopySchema>;
+
+  scenes: Record<string, z.infer<typeof SceneSchema>>;
 }
 
 /**

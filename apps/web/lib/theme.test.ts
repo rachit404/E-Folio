@@ -100,3 +100,63 @@ describe("public/assets/theme.json", () => {
     expect(Object.keys(file.presets)).toContain("hulk");
   });
 });
+
+describe("scene and copy config", () => {
+  const file = (extra: Record<string, unknown>) =>
+    ThemeFileSchema.parse({
+      identity: { name: "J", shortName: "J", universe: "U" },
+      default: "a",
+      presets: {
+        a: {
+          colors: {
+            void: "#000", graphite: "#111", panel: "#222", primary: "#0ff",
+            accent: "#f00", white: "#fff", muted: "#999", dim: "#555",
+          },
+          hero: {
+            backgroundImage: "", foregroundImage: "", character: "c",
+            eyebrow: "", status: "", cta: "", scrollLabel: "",
+          },
+          navigation: { showNumbers: true },
+          ...extra,
+        },
+      },
+    });
+
+  it("defaults copy to the comps' editable wording", () => {
+    const { copy } = file({}).presets.a;
+
+    expect(copy.taglineTop).toBe("Same mind. Different universe.");
+    expect(copy.pillars).toHaveLength(4);
+    expect(copy.roles).toEqual(["Engineer", "Builder", "Curious mind"]);
+  });
+
+  it("lets a preset override copy fields independently", () => {
+    const { copy } = file({ copy: { intro: "Hello." } }).presets.a;
+
+    expect(copy.intro).toBe("Hello.");
+    expect(copy.taglineTop).toBe("Same mind. Different universe.");
+  });
+
+  it("accepts a scene manifest and fills defaults", () => {
+    const { scenes } = file({
+      scenes: { home: { frames: 120, pattern: "/s/home/{n}.webp" } },
+    }).presets.a;
+
+    expect(scenes.home).toMatchObject({
+      frames: 120,
+      pad: 4,
+      focal: [0.5, 0.5],
+      push: 1,
+    });
+  });
+
+  it("rejects a scene pattern without {n}", () => {
+    expect(() =>
+      file({ scenes: { home: { frames: 10, pattern: "/s/home.webp" } } }),
+    ).toThrow(/\{n\}/);
+  });
+
+  it("has no scenes configured by default (placeholder art)", () => {
+    expect(file({}).presets.a.scenes).toEqual({});
+  });
+});
